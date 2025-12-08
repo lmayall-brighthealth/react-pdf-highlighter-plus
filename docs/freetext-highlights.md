@@ -90,10 +90,16 @@ const HighlightContainer = ({ editHighlight }) => {
 | `onEditStart` | `() => void` | No | Called when editing begins |
 | `onEditEnd` | `() => void` | No | Called when editing ends |
 | `style` | `CSSProperties` | No | Custom container styling |
-| `color` | `string` | No | Text color |
-| `backgroundColor` | `string` | No | Background color |
-| `fontFamily` | `string` | No | Font family |
-| `fontSize` | `string` | No | Font size (e.g., "14px") |
+| `color` | `string` | No | Text color (default: "#333333") |
+| `backgroundColor` | `string` | No | Background color (default: "#ffffc8") |
+| `fontFamily` | `string` | No | Font family (default: "inherit") |
+| `fontSize` | `string` | No | Font size (default: "14px") |
+| `onStyleChange` | `(style: FreetextStyle) => void` | No | Called when style changes via style panel |
+| `dragIcon` | `ReactNode` | No | Custom drag handle icon |
+| `editIcon` | `ReactNode` | No | Custom edit button icon |
+| `styleIcon` | `ReactNode` | No | Custom style button icon |
+| `backgroundColorPresets` | `string[]` | No | Color presets for background (default: yellow, red, green, blue, purple) |
+| `textColorPresets` | `string[]` | No | Color presets for text (default: dark gray, red, blue, green, purple) |
 
 ### PdfHighlighter Props (Freetext-related)
 
@@ -104,6 +110,56 @@ const HighlightContainer = ({ editHighlight }) => {
 
 ## Styling
 
+### Built-in Style Panel
+
+The FreetextHighlight component includes a built-in style panel accessible via the palette icon in the toolbar. The panel provides:
+
+- **Background Color**: Quick preset buttons + custom color picker
+- **Text Color**: Quick preset buttons + custom color picker
+- **Font Size**: Dropdown selector (10px - 24px)
+- **Font Family**: Dropdown selector (Default, Arial, Georgia, Courier, Times)
+
+To enable style changes, provide the `onStyleChange` callback:
+
+```tsx
+<FreetextHighlight
+  highlight={highlight}
+  color={highlight.color}
+  backgroundColor={highlight.backgroundColor}
+  fontSize={highlight.fontSize}
+  fontFamily={highlight.fontFamily}
+  onStyleChange={(style) => {
+    editHighlight(highlight.id, style);
+  }}
+/>
+```
+
+### Custom Color Presets
+
+You can customize the color preset buttons:
+
+```tsx
+<FreetextHighlight
+  highlight={highlight}
+  backgroundColorPresets={["#ffffc8", "#ffcdd2", "#c8e6c9", "#bbdefb", "#e1bee7"]}
+  textColorPresets={["#333333", "#d32f2f", "#1976d2", "#388e3c", "#7b1fa2"]}
+  onStyleChange={(style) => editHighlight(highlight.id, style)}
+/>
+```
+
+### Custom Icons
+
+Customize the toolbar icons with your own React components:
+
+```tsx
+<FreetextHighlight
+  highlight={highlight}
+  dragIcon={<MyDragIcon />}
+  editIcon={<MyEditIcon />}
+  styleIcon={<MyStyleIcon />}
+/>
+```
+
 ### Default Styling
 
 The component comes with default sticky-note styling. Override via CSS classes:
@@ -111,7 +167,11 @@ The component comes with default sticky-note styling. Override via CSS classes:
 ```css
 .FreetextHighlight { }                    /* Container */
 .FreetextHighlight__container { }         /* Inner wrapper */
+.FreetextHighlight__toolbar { }           /* Toolbar with icons */
 .FreetextHighlight__drag-handle { }       /* Drag handle */
+.FreetextHighlight__edit-button { }       /* Edit button */
+.FreetextHighlight__style-button { }      /* Style panel toggle */
+.FreetextHighlight__style-panel { }       /* Style settings panel */
 .FreetextHighlight__text { }              /* Text display */
 .FreetextHighlight__input { }             /* Text input (edit mode) */
 .FreetextHighlight--scrolledTo { }        /* When auto-scrolled to */
@@ -331,9 +391,15 @@ export default App;
 4. Click outside to save
 
 ### Moving a Note
-1. Grab the drag handle (left side with dots)
+1. Grab the drag handle icon (6-dot grid icon in toolbar)
 2. Drag to new position
 3. Release to save new position
+
+### Changing Style
+1. Click the palette icon in the toolbar
+2. Select background/text color from presets or use color picker
+3. Adjust font size and family as needed
+4. Changes are saved immediately via `onStyleChange`
 
 ## Data Structure
 

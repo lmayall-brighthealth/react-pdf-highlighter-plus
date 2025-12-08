@@ -32,6 +32,12 @@ interface FreetextHighlightProps {
   onTextChange?(newText: string): void;
 
   /**
+   * Callback triggered when style changes via the built-in style panel.
+   * @param style - The updated style options.
+   */
+  onStyleChange?(style: FreetextStyle): void;
+
+  /**
    * Whether the highlight has been auto-scrolled into view.
    * Default styling renders a red border when true.
    */
@@ -65,27 +71,65 @@ interface FreetextHighlightProps {
 
   /**
    * Text color for the annotation content.
-   * @example "#333333"
+   * @default "#333333"
    */
   color?: string;
 
   /**
+   * Background color for the annotation content.
+   * @default "#ffffc8"
+   */
+  backgroundColor?: string;
+
+  /**
    * Font family for the annotation content.
-   * @example "Arial, sans-serif"
+   * @default "inherit"
    */
   fontFamily?: string;
 
   /**
    * Font size for the annotation content.
-   * @example "14px" or "1rem"
+   * @default "14px"
    */
   fontSize?: string;
 
   /**
-   * Background color for the annotation content.
-   * @example "#ffffc8"
+   * Custom drag handle icon. Replaces the default 6-dot grid icon.
    */
+  dragIcon?: ReactNode;
+
+  /**
+   * Custom edit button icon. Replaces the default pencil icon.
+   */
+  editIcon?: ReactNode;
+
+  /**
+   * Custom style button icon. Replaces the default palette icon.
+   */
+  styleIcon?: ReactNode;
+
+  /**
+   * Custom background color presets for the style panel.
+   * @default ["#ffffc8", "#ffcdd2", "#c8e6c9", "#bbdefb", "#e1bee7"]
+   */
+  backgroundColorPresets?: string[];
+
+  /**
+   * Custom text color presets for the style panel.
+   * @default ["#333333", "#d32f2f", "#1976d2", "#388e3c", "#7b1fa2"]
+   */
+  textColorPresets?: string[];
+}
+```
+
+### FreetextStyle Type
+
+```typescript
+interface FreetextStyle {
+  color?: string;
   backgroundColor?: string;
+  fontFamily?: string;
+  fontSize?: string;
 }
 ```
 
@@ -110,12 +154,39 @@ interface FreetextHighlightProps {
       content: { text: newText },
     });
   }}
+  onStyleChange={(style) => {
+    // Save style changes from the built-in style panel
+    editHighlight(highlight.id, style);
+  }}
   onEditStart={() => toggleEditInProgress(true)}
   onEditEnd={() => toggleEditInProgress(false)}
-  color="#333333"
-  backgroundColor="#ffffc8"
-  fontFamily="inherit"
-  fontSize="14px"
+  color={highlight.color ?? "#333333"}
+  backgroundColor={highlight.backgroundColor ?? "#ffffc8"}
+  fontFamily={highlight.fontFamily ?? "inherit"}
+  fontSize={highlight.fontSize ?? "14px"}
+/>
+```
+
+### Usage with Custom Icons
+
+```tsx
+<FreetextHighlight
+  highlight={highlight}
+  dragIcon={<GripVertical size={14} />}
+  editIcon={<Pencil size={14} />}
+  styleIcon={<Palette size={14} />}
+  // ... other props
+/>
+```
+
+### Usage with Custom Color Presets
+
+```tsx
+<FreetextHighlight
+  highlight={highlight}
+  backgroundColorPresets={["#fff3e0", "#e3f2fd", "#f3e5f5", "#e8f5e9"]}
+  textColorPresets={["#000000", "#1565c0", "#6a1b9a", "#2e7d32"]}
+  onStyleChange={(style) => editHighlight(highlight.id, style)}
 />
 ```
 
