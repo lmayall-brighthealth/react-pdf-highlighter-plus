@@ -9,7 +9,7 @@
     {
       "name": "Edward Ha",
       "email": "quocvietha08@gmail.com"
-    },
+    }
   ],
   "keywords": [
     "pdf",
@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.4.168",
     "react-rnd": "^10.4.11"
   },

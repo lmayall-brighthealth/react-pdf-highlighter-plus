@@ -55,7 +55,8 @@
 
 .FreetextButton,
 .ImageButton,
-.SignatureButton {
+.SignatureButton,
+.ExportButton {
     background: none;
     color: #f5f5f5;
     border: none;
@@ -68,7 +69,8 @@
 
 .FreetextButton:hover,
 .ImageButton:hover,
-.SignatureButton:hover {
+.SignatureButton:hover,
+.ExportButton:hover {
     color: #b958ff;
     transform: scale(1.05);
 }

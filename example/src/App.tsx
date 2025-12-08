@@ -15,6 +15,7 @@ import {
   SignaturePad,
   Tip,
   ViewportHighlight,
+  exportPdf,
 } from "./react-pdf-highlighter-extended";
 import "./style/App.css";
 import { testHighlights as _testHighlights } from "./test-highlights";
@@ -173,6 +174,33 @@ const App = () => {
     setImageMode(true);
   };
 
+  const handleExportPdf = async () => {
+    console.log("Exporting PDF with annotations...");
+    try {
+      const pdfBytes = await exportPdf(url, highlights, {
+        onProgress: (current, total) => {
+          console.log(`Exporting page ${current}/${total}`);
+        },
+      });
+
+      // Download the file
+      const blob = new Blob([pdfBytes as BlobPart], { type: "application/pdf" });
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = "annotated-document.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+
+      console.log("PDF exported successfully!");
+    } catch (error) {
+      console.error("Failed to export PDF:", error);
+      alert("Failed to export PDF. See console for details.");
+    }
+  };
+
   const resetHighlights = () => {
     setHighlights([]);
   };
@@ -244,6 +272,7 @@ const App = () => {
           isFreetextMode={freetextMode}
           onAddImage={handleAddImage}
           onAddSignature={handleAddSignature}
+          onExportPdf={handleExportPdf}
         />
         <PdfLoader document={url}>
           {(pdfDocument) => (

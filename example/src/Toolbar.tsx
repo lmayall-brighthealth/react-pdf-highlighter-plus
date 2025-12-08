@@ -9,9 +9,10 @@ interface ToolbarProps {
   isFreetextMode: boolean;
   onAddImage: () => void;
   onAddSignature: () => void;
+  onExportPdf: () => void;
 }
 
-const Toolbar = ({ setPdfScaleValue, toggleHighlightPen, toggleFreetextMode, isFreetextMode, onAddImage, onAddSignature }: ToolbarProps) => {
+const Toolbar = ({ setPdfScaleValue, toggleHighlightPen, toggleFreetextMode, isFreetextMode, onAddImage, onAddSignature, onExportPdf }: ToolbarProps) => {
   const [zoom, setZoom] = useState<number | null>(null);
   const [isHighlightPen, setIsHighlightPen] = useState<boolean>(false);
 
@@ -70,6 +71,13 @@ const Toolbar = ({ setPdfScaleValue, toggleHighlightPen, toggleFreetextMode, isF
         onClick={onAddSignature}
       >
         Add Signature
+      </button>
+      <button
+        title="Export PDF with annotations"
+        className="ExportButton"
+        onClick={onExportPdf}
+      >
+        Export PDF
       </button>
     </div>
   );

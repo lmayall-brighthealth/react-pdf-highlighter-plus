@@ -30,6 +30,11 @@ import {
   viewportPositionToScaled,
   scaledPositionToViewport,
 } from "./lib/coordinates";
+import {
+  exportPdf,
+  ExportPdfOptions,
+  ExportableHighlight,
+} from "./lib/export-pdf";
 
 import {
   PdfHighlighterUtils,
@@ -49,6 +54,7 @@ export {
   viewportPositionToScaled,
   scaledPositionToViewport,
   usePdfHighlighterContext,
+  exportPdf,
 };
 
 export type {
@@ -63,5 +69,7 @@ export type {
   ImageHighlightProps,
   SignaturePadProps,
   PdfLoaderProps,
+  ExportPdfOptions,
+  ExportableHighlight,
 };
 export * from "./types";
