@@ -57,6 +57,16 @@ export interface ImageHighlightProps {
    * Custom drag icon. Replaces the default 6-dot grid icon.
    */
   dragIcon?: ReactNode;
+
+  /**
+   * Callback triggered when the delete button is clicked.
+   */
+  onDelete?(): void;
+
+  /**
+   * Custom delete icon. Replaces the default trash icon.
+   */
+  deleteIcon?: ReactNode;
 }
 
 /**
@@ -70,6 +80,12 @@ const DefaultDragIcon = () => (
     <circle cx="16" cy="12" r="2" />
     <circle cx="8" cy="18" r="2" />
     <circle cx="16" cy="18" r="2" />
+  </svg>
+);
+
+const DefaultDeleteIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
   </svg>
 );
 
@@ -88,6 +104,8 @@ export const ImageHighlight = ({
   onEditEnd,
   style,
   dragIcon,
+  onDelete,
+  deleteIcon,
 }: ImageHighlightProps) => {
   const highlightClass = isScrolledTo ? "ImageHighlight--scrolledTo" : "";
 
@@ -150,6 +168,19 @@ export const ImageHighlight = ({
             <div className="ImageHighlight__drag-handle" title="Drag to move">
               {dragIcon || <DefaultDragIcon />}
             </div>
+            {onDelete && (
+              <button
+                className="ImageHighlight__delete-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                title="Delete"
+                type="button"
+              >
+                {deleteIcon || <DefaultDeleteIcon />}
+              </button>
+            )}
           </div>
           <div className="ImageHighlight__content">
             {imageUrl ? (

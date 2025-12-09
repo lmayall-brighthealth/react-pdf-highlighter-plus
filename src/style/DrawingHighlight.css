@@ -19,6 +19,7 @@
 .DrawingHighlight__toolbar {
   display: flex;
   align-items: center;
+  gap: 4px;
   padding: 2px 4px;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 4px;
@@ -84,7 +85,6 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  margin-left: 4px;
   padding: 0;
   background: transparent;
   border: none;
@@ -162,4 +162,23 @@
   color: #b958ff;
   border-color: #b958ff;
   background-color: rgba(185, 88, 255, 0.2);
+}
+
+.DrawingHighlight__delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: white;
+  border-radius: 3px;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.DrawingHighlight__delete-button:hover {
+  background: rgba(255, 100, 100, 0.6);
 }

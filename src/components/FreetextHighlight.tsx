@@ -129,6 +129,16 @@ export interface FreetextHighlightProps {
    * Default: ["#333333", "#d32f2f", "#1976d2", "#388e3c", "#7b1fa2"]
    */
   textColorPresets?: string[];
+
+  /**
+   * Callback triggered when the delete button is clicked.
+   */
+  onDelete?(): void;
+
+  /**
+   * Custom delete icon. Replaces the default trash icon.
+   */
+  deleteIcon?: ReactNode;
 }
 
 /**
@@ -160,8 +170,14 @@ const DefaultStyleIcon = () => (
   </svg>
 );
 
+const DefaultDeleteIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+  </svg>
+);
+
 // Default color presets
-const DEFAULT_BACKGROUND_PRESETS = ["#ffffc8", "#ffcdd2", "#c8e6c9", "#bbdefb", "#e1bee7"];
+const DEFAULT_BACKGROUND_PRESETS = ["transparent", "#ffffc8", "#ffcdd2", "#c8e6c9", "#bbdefb", "#e1bee7"];
 const DEFAULT_TEXT_PRESETS = ["#333333", "#d32f2f", "#1976d2", "#388e3c", "#7b1fa2"];
 
 export const FreetextHighlight = ({
@@ -184,6 +200,8 @@ export const FreetextHighlight = ({
   styleIcon,
   backgroundColorPresets = DEFAULT_BACKGROUND_PRESETS,
   textColorPresets = DEFAULT_TEXT_PRESETS,
+  onDelete,
+  deleteIcon,
 }: FreetextHighlightProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isStylePanelOpen, setIsStylePanelOpen] = useState(false);
@@ -326,7 +344,7 @@ export const FreetextHighlight = ({
             onEditStart?.();
           }
         }}
-        cancel=".FreetextHighlight__text, .FreetextHighlight__input, .FreetextHighlight__edit-button, .FreetextHighlight__style-button, .FreetextHighlight__style-panel"
+        cancel=".FreetextHighlight__text, .FreetextHighlight__input, .FreetextHighlight__edit-button, .FreetextHighlight__style-button, .FreetextHighlight__style-panel, .FreetextHighlight__delete-button"
       >
         <div className="FreetextHighlight__container" style={containerStyle}>
           <div className="FreetextHighlight__toolbar">
@@ -352,6 +370,19 @@ export const FreetextHighlight = ({
             >
               {styleIcon || <DefaultStyleIcon />}
             </button>
+            {onDelete && (
+              <button
+                className="FreetextHighlight__delete-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                title="Delete"
+                type="button"
+              >
+                {deleteIcon || <DefaultDeleteIcon />}
+              </button>
+            )}
           </div>
           {isStylePanelOpen && (
             <div
@@ -367,16 +398,16 @@ export const FreetextHighlight = ({
                       <button
                         key={c}
                         type="button"
-                        className={`FreetextHighlight__color-preset ${backgroundColor === c ? "active" : ""}`}
-                        style={{ backgroundColor: c }}
+                        className={`FreetextHighlight__color-preset ${c === "transparent" ? "FreetextHighlight__color-preset--transparent" : ""} ${backgroundColor === c ? "active" : ""}`}
+                        style={c !== "transparent" ? { backgroundColor: c } : undefined}
                         onClick={() => onStyleChange?.({ backgroundColor: c })}
-                        title={c}
+                        title={c === "transparent" ? "No background" : c}
                       />
                     ))}
                   </div>
                   <input
                     type="color"
-                    value={backgroundColor}
+                    value={backgroundColor === "transparent" ? "#ffffff" : backgroundColor}
                     onChange={(e) => {
                       onStyleChange?.({ backgroundColor: e.target.value });
                     }}

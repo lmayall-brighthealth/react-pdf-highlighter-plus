@@ -295,9 +295,6 @@ async function renderFreetextHighlight(
   font: PDFFont
 ): Promise<void> {
   const text = highlight.content?.text || "";
-  const bgColor = parseColor(
-    highlight.backgroundColor || options.defaultFreetextBgColor || "#ffffc8"
-  );
   const textColor = parseColor(
     highlight.color || options.defaultFreetextColor || "#333333"
   );
@@ -324,15 +321,19 @@ async function renderFreetextHighlight(
     text: text.substring(0, 50),
   });
 
-  // Draw background
-  page.drawRectangle({
-    x,
-    y,
-    width,
-    height,
-    color: rgb(bgColor.r, bgColor.g, bgColor.b),
-    opacity: bgColor.a,
-  });
+  // Draw background (skip if transparent)
+  const bgColorValue = highlight.backgroundColor || options.defaultFreetextBgColor || "#ffffc8";
+  if (bgColorValue !== "transparent") {
+    const bgColor = parseColor(bgColorValue);
+    page.drawRectangle({
+      x,
+      y,
+      width,
+      height,
+      color: rgb(bgColor.r, bgColor.g, bgColor.b),
+      opacity: bgColor.a,
+    });
+  }
 
   // Draw wrapped text with scaled padding
   const padding = 4 * yRatio;
@@ -364,7 +365,54 @@ async function renderFreetextHighlight(
 }
 
 /**
+ * Transform visual coordinates to raw MediaBox coordinates.
+ * pdf-lib's drawImage uses raw MediaBox space, but our coordinates are in visual space.
+ */
+function transformToRawCoordinates(
+  page: PDFPage,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): { x: number; y: number; width: number; height: number } {
+  const rotation = page.getRotation().angle;
+  const pageWidth = page.getWidth(); // Visual width
+  const pageHeight = page.getHeight(); // Visual height
+
+  if (rotation === 90) {
+    // Visual (x, y) → Raw MediaBox coordinates
+    // When rotated 90° CCW, visual top-left maps to raw bottom-left
+    return {
+      x: y,
+      y: pageWidth - x - width,
+      width: height,
+      height: width,
+    };
+  } else if (rotation === 180) {
+    // Rotated 180°, origin flips to opposite corner
+    return {
+      x: pageWidth - x - width,
+      y: pageHeight - y - height,
+      width,
+      height,
+    };
+  } else if (rotation === 270) {
+    // When rotated 90° CW (270° CCW)
+    return {
+      x: pageHeight - y - height,
+      y: x,
+      width: height,
+      height: width,
+    };
+  }
+
+  // No rotation - coordinates are already correct
+  return { x, y, width, height };
+}
+
+/**
  * Render an image highlight (embedded image).
+ * Handles page rotation by transforming visual coordinates to raw MediaBox space.
  */
 async function renderImageHighlight(
   pdfDoc: PDFDocument,
@@ -381,12 +429,34 @@ async function renderImageHighlight(
         ? await pdfDoc.embedPng(bytes)
         : await pdfDoc.embedJpg(bytes);
 
-    const { x, y, width, height } = scaledToPdfPoints(
+    // Calculate coordinates in visual space
+    const visualCoords = scaledToPdfPoints(
       highlight.position.boundingRect,
       page
     );
 
-    page.drawImage(image, { x, y, width, height });
+    // Transform to raw MediaBox coordinates based on page rotation
+    const rawCoords = transformToRawCoordinates(
+      page,
+      visualCoords.x,
+      visualCoords.y,
+      visualCoords.width,
+      visualCoords.height
+    );
+
+    console.log("Image export:", {
+      rotation: page.getRotation().angle,
+      visualCoords,
+      rawCoords,
+    });
+
+    // Draw image - no rotation needed, just correct positioning
+    page.drawImage(image, {
+      x: rawCoords.x,
+      y: rawCoords.y,
+      width: rawCoords.width,
+      height: rawCoords.height,
+    });
   } catch (error) {
     console.error("Failed to embed image:", error);
   }

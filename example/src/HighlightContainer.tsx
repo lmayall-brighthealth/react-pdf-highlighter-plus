@@ -19,6 +19,7 @@ interface HighlightContainerProps {
     idToUpdate: string,
     edit: Partial<CommentedHighlight>,
   ) => void;
+  deleteHighlight: (highlightId: string) => void;
   onContextMenu?: (
     event: MouseEvent<HTMLDivElement>,
     highlight: ViewportHighlight<CommentedHighlight>,
@@ -27,6 +28,7 @@ interface HighlightContainerProps {
 
 const HighlightContainer = ({
   editHighlight,
+  deleteHighlight,
   onContextMenu,
 }: HighlightContainerProps) => {
   const {
@@ -83,6 +85,7 @@ const HighlightContainer = ({
         }
         onEditStart={() => toggleEditInProgress(true)}
         onEditEnd={() => toggleEditInProgress(false)}
+        onDelete={() => deleteHighlight(highlight.id)}
       />
     );
   } else if (highlight.type === "image") {
@@ -104,6 +107,7 @@ const HighlightContainer = ({
         }
         onEditStart={() => toggleEditInProgress(true)}
         onEditEnd={() => toggleEditInProgress(false)}
+        onDelete={() => deleteHighlight(highlight.id)}
       />
     );
   } else if (highlight.type === "drawing") {
@@ -134,6 +138,7 @@ const HighlightContainer = ({
         }
         onEditStart={() => toggleEditInProgress(true)}
         onEditEnd={() => toggleEditInProgress(false)}
+        onDelete={() => deleteHighlight(highlight.id)}
       />
     );
   } else {

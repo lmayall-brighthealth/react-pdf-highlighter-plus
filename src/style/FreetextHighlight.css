@@ -217,3 +217,33 @@
   border-color: #333;
   box-shadow: 0 0 0 1px white, 0 0 0 2px #333;
 }
+
+.FreetextHighlight__color-preset--transparent {
+  background:
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  background-color: white;
+}
+
+.FreetextHighlight__delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: white;
+  border-radius: 3px;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.FreetextHighlight__delete-button:hover {
+  background: rgba(255, 100, 100, 0.6);
+}

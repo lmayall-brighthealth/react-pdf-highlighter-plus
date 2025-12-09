@@ -332,6 +332,7 @@ const App = () => {
             >
               <HighlightContainer
                 editHighlight={editHighlight}
+                deleteHighlight={(id) => deleteHighlight({ id } as Highlight)}
                 onContextMenu={handleContextMenu}
               />
             </PdfHighlighter>

@@ -19,6 +19,7 @@
 .ImageHighlight__toolbar {
   display: flex;
   align-items: center;
+  gap: 4px;
   padding: 2px 4px;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 4px;
@@ -74,4 +75,23 @@
 
 .ImageHighlight--scrolledTo .ImageHighlight__container {
   box-shadow: 0 0 0 3px #ff4141, 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ImageHighlight__delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: white;
+  border-radius: 3px;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.ImageHighlight__delete-button:hover {
+  background: rgba(255, 100, 100, 0.6);
 }
