@@ -21,29 +21,36 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 6px;
-  background: rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  position: relative;
+  padding: 2px 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  position: absolute;
+  top: 4px;
+  left: 4px;
   z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.FreetextHighlight__container:hover .FreetextHighlight__toolbar {
+  opacity: 1;
 }
 
 .FreetextHighlight__drag-handle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: grab;
   user-select: none;
-  color: rgba(0, 0, 0, 0.5);
+  color: white;
   border-radius: 3px;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s;
 }
 
 .FreetextHighlight__drag-handle:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .FreetextHighlight__drag-handle:active {
@@ -54,20 +61,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: none;
   background: transparent;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.5);
+  color: white;
   border-radius: 3px;
   padding: 0;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s;
 }
 
 .FreetextHighlight__edit-button:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .FreetextHighlight__content {
@@ -112,20 +118,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: none;
   background: transparent;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.5);
+  color: white;
   border-radius: 3px;
   padding: 0;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s;
 }
 
 .FreetextHighlight__style-button:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .FreetextHighlight__style-panel {

@@ -134,6 +134,79 @@ function dataUrlToBytes(dataUrl: string): {
 }
 
 /**
+ * Wrap text into multiple lines that fit within maxWidth.
+ * Long words are broken character by character (like CSS word-wrap: break-word).
+ */
+function wrapText(
+  text: string,
+  font: PDFFont,
+  fontSize: number,
+  maxWidth: number
+): string[] {
+  if (!text || maxWidth <= 0) return [];
+
+  const lines: string[] = [];
+
+  // Split by newlines first to preserve intentional line breaks
+  const paragraphs = text.split(/\n/);
+
+  for (const paragraph of paragraphs) {
+    if (!paragraph.trim()) {
+      lines.push("");
+      continue;
+    }
+
+    const words = paragraph.split(/\s+/);
+    let currentLine = "";
+
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+      if (testWidth <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        // Push current line if exists
+        if (currentLine) {
+          lines.push(currentLine);
+          currentLine = "";
+        }
+
+        // Check if word itself is too wide - break it character by character
+        if (font.widthOfTextAtSize(word, fontSize) > maxWidth) {
+          let remaining = word;
+          while (remaining.length > 0) {
+            let charCount = 1;
+            // Find how many characters fit in maxWidth
+            while (
+              charCount < remaining.length &&
+              font.widthOfTextAtSize(remaining.substring(0, charCount + 1), fontSize) <= maxWidth
+            ) {
+              charCount++;
+            }
+            const chunk = remaining.substring(0, charCount);
+            remaining = remaining.substring(charCount);
+
+            if (remaining.length > 0) {
+              // More characters remaining, push this chunk as a complete line
+              lines.push(chunk);
+            } else {
+              // Last chunk, keep it as current line (may combine with next word)
+              currentLine = chunk;
+            }
+          }
+        } else {
+          currentLine = word;
+        }
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+  }
+
+  return lines;
+}
+
+/**
  * Group highlights by page number.
  */
 function groupByPage(
@@ -213,7 +286,7 @@ async function renderAreaHighlight(
 
 /**
  * Render a freetext highlight (background rectangle + text).
- * Text is truncated if it doesn't fit.
+ * Text is wrapped to fit within the box.
  */
 async function renderFreetextHighlight(
   page: PDFPage,
@@ -228,13 +301,28 @@ async function renderFreetextHighlight(
   const textColor = parseColor(
     highlight.color || options.defaultFreetextColor || "#333333"
   );
-  const fontSize =
-    parseInt(highlight.fontSize || "") || options.defaultFreetextFontSize || 14;
 
+  // Get box dimensions in PDF points
   const { x, y, width, height } = scaledToPdfPoints(
     highlight.position.boundingRect,
     page
   );
+
+  // Scale font size by the same ratio used for the box coordinates
+  // This ensures the font scales proportionally with the box
+  const pdfHeight = page.getHeight();
+  const yRatio = pdfHeight / highlight.position.boundingRect.height;
+  const storedFontSize =
+    parseInt(highlight.fontSize || "") || options.defaultFreetextFontSize || 14;
+  const fontSize = storedFontSize * yRatio;
+
+  console.log("Freetext export:", {
+    storedFontSize,
+    yRatio,
+    fontSize,
+    boxDimensions: { x, y, width, height },
+    text: text.substring(0, 50),
+  });
 
   // Draw background
   page.drawRectangle({
@@ -246,19 +334,32 @@ async function renderFreetextHighlight(
     opacity: bgColor.a,
   });
 
-  // Draw text with padding (truncate if too long)
-  const padding = 4;
+  // Draw wrapped text with scaled padding
+  const padding = 4 * yRatio;
   const maxWidth = width - padding * 2;
+  const lineHeight = fontSize * 1.3;
 
   if (maxWidth > 0 && text) {
-    page.drawText(text, {
-      x: x + padding,
-      y: y + height - fontSize - padding,
-      size: fontSize,
-      font,
-      color: rgb(textColor.r, textColor.g, textColor.b),
-      maxWidth: maxWidth,
-    });
+    const lines = wrapText(text, font, fontSize, maxWidth);
+    let currentY = y + height - fontSize - padding;
+
+    for (const line of lines) {
+      // Stop if we've run out of vertical space
+      if (currentY < y + padding) break;
+
+      // Skip empty lines but still move down
+      if (line.trim()) {
+        page.drawText(line, {
+          x: x + padding,
+          y: currentY,
+          size: fontSize,
+          font,
+          color: rgb(textColor.r, textColor.g, textColor.b),
+        });
+      }
+
+      currentY -= lineHeight;
+    }
   }
 }
 

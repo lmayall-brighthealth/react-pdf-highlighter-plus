@@ -1,128 +1,310 @@
 # API Reference
 
-## FreetextHighlight Component
+Complete reference for all components, functions, and types in react-pdf-highlighter-extended.
 
-A draggable, editable text annotation component for PDF documents.
+---
 
-### Import
+## Components
+
+### FreetextHighlight
+
+A draggable, editable text annotation component.
 
 ```tsx
 import { FreetextHighlight } from "react-pdf-highlighter-extended";
 ```
 
-### Props
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `highlight` | `ViewportHighlight` | Required | The highlight data to render |
+| `onChange` | `(rect: LTWHP) => void` | - | Called when position changes |
+| `onTextChange` | `(text: string) => void` | - | Called when text content changes |
+| `onStyleChange` | `(style: FreetextStyle) => void` | - | Called when style changes via panel |
+| `isScrolledTo` | `boolean` | `false` | Whether highlight was auto-scrolled to |
+| `bounds` | `string \| Element` | - | Bounds for dragging (react-rnd) |
+| `onContextMenu` | `(event: MouseEvent) => void` | - | Right-click handler |
+| `onEditStart` | `() => void` | - | Called when editing begins |
+| `onEditEnd` | `() => void` | - | Called when editing ends |
+| `style` | `CSSProperties` | - | Custom container styling |
+| `color` | `string` | `"#333333"` | Text color |
+| `backgroundColor` | `string` | `"#ffffc8"` | Background color |
+| `fontFamily` | `string` | `"inherit"` | Font family |
+| `fontSize` | `string` | `"14px"` | Font size |
+| `dragIcon` | `ReactNode` | 6-dot grid | Custom drag handle icon |
+| `editIcon` | `ReactNode` | Pencil | Custom edit button icon |
+| `styleIcon` | `ReactNode` | Palette | Custom style button icon |
+| `backgroundColorPresets` | `string[]` | See below | Background color presets |
+| `textColorPresets` | `string[]` | See below | Text color presets |
+
+**Default Color Presets:**
+- Background: `["#ffffc8", "#ffcdd2", "#c8e6c9", "#bbdefb", "#e1bee7"]`
+- Text: `["#333333", "#d32f2f", "#1976d2", "#388e3c", "#7b1fa2"]`
+
+#### Example
+
+```tsx
+<FreetextHighlight
+  highlight={highlight}
+  isScrolledTo={isScrolledTo}
+  onChange={(rect) => updatePosition(highlight.id, rect)}
+  onTextChange={(text) => updateText(highlight.id, text)}
+  onStyleChange={(style) => updateStyle(highlight.id, style)}
+  color={highlight.color}
+  backgroundColor={highlight.backgroundColor}
+  fontSize={highlight.fontSize}
+/>
+```
+
+---
+
+### ImageHighlight
+
+A draggable, resizable image annotation component.
+
+```tsx
+import { ImageHighlight } from "react-pdf-highlighter-extended";
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `highlight` | `ViewportHighlight` | Required | The highlight data (must have `content.image`) |
+| `onChange` | `(rect: LTWHP) => void` | - | Called when position/size changes |
+| `isScrolledTo` | `boolean` | `false` | Whether highlight was auto-scrolled to |
+| `bounds` | `string \| Element` | - | Bounds for dragging |
+| `onContextMenu` | `(event: MouseEvent) => void` | - | Right-click handler |
+| `onEditStart` | `() => void` | - | Called when drag/resize begins |
+| `onEditEnd` | `() => void` | - | Called when drag/resize ends |
+| `style` | `CSSProperties` | - | Custom container styling |
+| `dragIcon` | `ReactNode` | 6-dot grid | Custom drag handle icon |
+
+#### Example
+
+```tsx
+<ImageHighlight
+  highlight={highlight}
+  isScrolledTo={isScrolledTo}
+  bounds={highlightBindings.textLayer}
+  onChange={(rect) => updatePosition(highlight.id, rect)}
+  onEditStart={() => toggleEditInProgress(true)}
+  onEditEnd={() => toggleEditInProgress(false)}
+/>
+```
+
+---
+
+### DrawingHighlight
+
+A draggable, resizable freehand drawing component.
+
+```tsx
+import { DrawingHighlight } from "react-pdf-highlighter-extended";
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `highlight` | `ViewportHighlight` | Required | The highlight data (must have `content.image`) |
+| `onChange` | `(rect: LTWHP) => void` | - | Called when position/size changes |
+| `isScrolledTo` | `boolean` | `false` | Whether highlight was auto-scrolled to |
+| `bounds` | `string \| Element` | - | Bounds for dragging |
+| `onContextMenu` | `(event: MouseEvent) => void` | - | Right-click handler |
+| `onEditStart` | `() => void` | - | Called when drag/resize begins |
+| `onEditEnd` | `() => void` | - | Called when drag/resize ends |
+| `style` | `CSSProperties` | - | Custom container styling |
+| `dragIcon` | `ReactNode` | 6-dot grid | Custom drag handle icon |
+
+#### Example
+
+```tsx
+<DrawingHighlight
+  highlight={highlight}
+  isScrolledTo={isScrolledTo}
+  bounds={highlightBindings.textLayer}
+  onChange={(rect) => updatePosition(highlight.id, rect)}
+  onEditStart={() => toggleEditInProgress(true)}
+  onEditEnd={() => toggleEditInProgress(false)}
+/>
+```
+
+---
+
+### SignaturePad
+
+A modal component for drawing signatures.
+
+```tsx
+import { SignaturePad } from "react-pdf-highlighter-extended";
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `isOpen` | `boolean` | Required | Whether the modal is visible |
+| `onComplete` | `(dataUrl: string) => void` | Required | Called with PNG data URL when done |
+| `onClose` | `() => void` | Required | Called when modal is closed |
+| `width` | `number` | `400` | Canvas width in pixels |
+| `height` | `number` | `200` | Canvas height in pixels |
+
+#### Example
+
+```tsx
+<SignaturePad
+  isOpen={isOpen}
+  onComplete={(dataUrl) => {
+    setPendingImage(dataUrl);
+    setImageMode(true);
+    setIsOpen(false);
+  }}
+  onClose={() => setIsOpen(false)}
+  width={400}
+  height={200}
+/>
+```
+
+---
+
+## Functions
+
+### exportPdf
+
+Export a PDF with annotations embedded.
+
+```tsx
+import { exportPdf } from "react-pdf-highlighter-extended";
+```
+
+#### Signature
 
 ```typescript
-interface FreetextHighlightProps {
-  /**
-   * The highlight to be rendered.
-   */
-  highlight: ViewportHighlight;
+async function exportPdf(
+  pdfSource: string | Uint8Array | ArrayBuffer,
+  highlights: ExportableHighlight[],
+  options?: ExportPdfOptions
+): Promise<Uint8Array>
+```
 
-  /**
-   * Callback triggered when the highlight position changes (drag).
-   * @param rect - The updated highlight area with page number.
-   */
-  onChange?(rect: LTWHP): void;
+#### Parameters
 
-  /**
-   * Callback triggered when the text content is updated.
-   * @param newText - The updated text content.
-   */
-  onTextChange?(newText: string): void;
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `pdfSource` | `string \| Uint8Array \| ArrayBuffer` | PDF as URL, bytes, or buffer |
+| `highlights` | `ExportableHighlight[]` | Highlights to embed |
+| `options` | `ExportPdfOptions` | Export configuration |
 
-  /**
-   * Callback triggered when style changes via the built-in style panel.
-   * @param style - The updated style options.
-   */
-  onStyleChange?(style: FreetextStyle): void;
+#### ExportPdfOptions
 
-  /**
-   * Whether the highlight has been auto-scrolled into view.
-   * Default styling renders a red border when true.
-   */
-  isScrolledTo?: boolean;
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `textHighlightColor` | `string` | `"rgba(255, 226, 143, 0.5)"` | Default text highlight color |
+| `areaHighlightColor` | `string` | `"rgba(255, 226, 143, 0.5)"` | Default area highlight color |
+| `defaultFreetextColor` | `string` | `"#333333"` | Default freetext text color |
+| `defaultFreetextBgColor` | `string` | `"#ffffc8"` | Default freetext background |
+| `defaultFreetextFontSize` | `number` | `14` | Default freetext font size |
+| `onProgress` | `(current, total) => void` | - | Progress callback |
 
-  /**
-   * Bounds for the draggable area. Prevents moving the highlight
-   * off the viewer/page. See react-rnd documentation.
-   */
-  bounds?: string | Element;
+#### Example
 
-  /**
-   * Callback triggered on right-click.
-   */
-  onContextMenu?(event: MouseEvent<HTMLDivElement>): void;
+```tsx
+const pdfBytes = await exportPdf(pdfUrl, highlights, {
+  textHighlightColor: "rgba(255, 226, 143, 0.5)",
+  onProgress: (current, total) => console.log(`${current}/${total}`),
+});
 
-  /**
-   * Called when the user starts editing (drag or text edit).
-   */
-  onEditStart?(): void;
+// Download
+const blob = new Blob([pdfBytes], { type: "application/pdf" });
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "annotated.pdf";
+a.click();
+URL.revokeObjectURL(url);
+```
 
-  /**
-   * Called when the user finishes editing.
-   */
-  onEditEnd?(): void;
+---
 
-  /**
-   * Custom CSS styles for the container.
-   */
-  style?: CSSProperties;
+## PdfHighlighter Props
 
-  /**
-   * Text color for the annotation content.
-   * @default "#333333"
-   */
-  color?: string;
+### Freetext-related
 
-  /**
-   * Background color for the annotation content.
-   * @default "#ffffc8"
-   */
-  backgroundColor?: string;
+| Prop | Type | Description |
+|------|------|-------------|
+| `enableFreetextCreation` | `(event: MouseEvent) => boolean` | Returns true when freetext mode is active |
+| `onFreetextClick` | `(position: ScaledPosition) => void` | Called when user clicks to create freetext |
 
-  /**
-   * Font family for the annotation content.
-   * @default "inherit"
-   */
-  fontFamily?: string;
+### Image-related
 
-  /**
-   * Font size for the annotation content.
-   * @default "14px"
-   */
-  fontSize?: string;
+| Prop | Type | Description |
+|------|------|-------------|
+| `enableImageCreation` | `(event: MouseEvent) => boolean` | Returns true when image mode is active |
+| `onImageClick` | `(position: ScaledPosition) => void` | Called when user clicks to place image |
 
-  /**
-   * Custom drag handle icon. Replaces the default 6-dot grid icon.
-   */
-  dragIcon?: ReactNode;
+### Drawing-related
 
-  /**
-   * Custom edit button icon. Replaces the default pencil icon.
-   */
-  editIcon?: ReactNode;
+| Prop | Type | Description |
+|------|------|-------------|
+| `enableDrawingCreation` | `(event: MouseEvent) => boolean` | Returns true when drawing mode is active |
+| `onDrawingComplete` | `(position: ScaledPosition, dataUrl: string) => void` | Called when drawing is finished |
+| `drawingConfig` | `DrawingConfig` | Stroke color and width settings |
 
-  /**
-   * Custom style button icon. Replaces the default palette icon.
-   */
-  styleIcon?: ReactNode;
+#### DrawingConfig
 
-  /**
-   * Custom background color presets for the style panel.
-   * @default ["#ffffc8", "#ffcdd2", "#c8e6c9", "#bbdefb", "#e1bee7"]
-   */
-  backgroundColorPresets?: string[];
-
-  /**
-   * Custom text color presets for the style panel.
-   * @default ["#333333", "#d32f2f", "#1976d2", "#388e3c", "#7b1fa2"]
-   */
-  textColorPresets?: string[];
+```typescript
+interface DrawingConfig {
+  strokeColor?: string;  // Default: "#000000"
+  strokeWidth?: number;  // Default: 2
 }
 ```
 
-### FreetextStyle Type
+---
+
+## Types
+
+### HighlightType
+
+```typescript
+type HighlightType = "text" | "area" | "freetext" | "image" | "drawing";
+```
+
+### Highlight
+
+```typescript
+interface Highlight {
+  id: string;
+  type?: HighlightType;
+  position: ScaledPosition;
+  content?: {
+    text?: string;
+    image?: string;
+  };
+}
+```
+
+### ExportableHighlight
+
+```typescript
+interface ExportableHighlight {
+  id: string;
+  type?: HighlightType;
+  content?: {
+    text?: string;
+    image?: string;
+  };
+  position: ScaledPosition;
+  highlightColor?: string;      // For text/area
+  color?: string;               // For freetext
+  backgroundColor?: string;     // For freetext
+  fontSize?: string;            // For freetext
+  fontFamily?: string;          // For freetext
+}
+```
+
+### FreetextStyle
 
 ```typescript
 interface FreetextStyle {
@@ -133,358 +315,41 @@ interface FreetextStyle {
 }
 ```
 
-### Usage Example
-
-```tsx
-<FreetextHighlight
-  highlight={highlight}
-  isScrolledTo={isScrolledTo}
-  onChange={(boundingRect) => {
-    // Save new position
-    editHighlight(highlight.id, {
-      position: {
-        boundingRect: viewportToScaled(boundingRect),
-        rects: [],
-      },
-    });
-  }}
-  onTextChange={(newText) => {
-    // Save new text
-    editHighlight(highlight.id, {
-      content: { text: newText },
-    });
-  }}
-  onStyleChange={(style) => {
-    // Save style changes from the built-in style panel
-    editHighlight(highlight.id, style);
-  }}
-  onEditStart={() => toggleEditInProgress(true)}
-  onEditEnd={() => toggleEditInProgress(false)}
-  color={highlight.color ?? "#333333"}
-  backgroundColor={highlight.backgroundColor ?? "#ffffc8"}
-  fontFamily={highlight.fontFamily ?? "inherit"}
-  fontSize={highlight.fontSize ?? "14px"}
-/>
-```
-
-### Usage with Custom Icons
-
-```tsx
-<FreetextHighlight
-  highlight={highlight}
-  dragIcon={<GripVertical size={14} />}
-  editIcon={<Pencil size={14} />}
-  styleIcon={<Palette size={14} />}
-  // ... other props
-/>
-```
-
-### Usage with Custom Color Presets
-
-```tsx
-<FreetextHighlight
-  highlight={highlight}
-  backgroundColorPresets={["#fff3e0", "#e3f2fd", "#f3e5f5", "#e8f5e9"]}
-  textColorPresets={["#000000", "#1565c0", "#6a1b9a", "#2e7d32"]}
-  onStyleChange={(style) => editHighlight(highlight.id, style)}
-/>
-```
-
----
-
-## PdfHighlighter Props (Freetext-related)
-
-### enableFreetextCreation
-
-```typescript
-enableFreetextCreation?(event: MouseEvent): boolean;
-```
-
-Condition to check before a freetext annotation click is registered.
-When this returns `true`, clicking on the PDF will create a freetext annotation.
-
-**Example:**
-```tsx
-<PdfHighlighter
-  enableFreetextCreation={() => freetextMode}
-  // ...
-/>
-```
-
-### onFreetextClick
-
-```typescript
-onFreetextClick?(position: ScaledPosition): void;
-```
-
-Callback triggered when user clicks to create a freetext annotation.
-Provides the scaled position where the click occurred.
-
-**Example:**
-```tsx
-const handleFreetextClick = (position: ScaledPosition) => {
-  const newHighlight = {
-    id: generateId(),
-    type: "freetext",
-    position,
-    content: { text: "New note" },
-  };
-  setHighlights([newHighlight, ...highlights]);
-};
-
-<PdfHighlighter
-  onFreetextClick={handleFreetextClick}
-  // ...
-/>
-```
-
----
-
-## ImageHighlight Component
-
-A draggable, resizable image annotation component for PDF documents.
-
-### Import
-
-```tsx
-import { ImageHighlight } from "react-pdf-highlighter-extended";
-```
-
-### Props
-
-```typescript
-interface ImageHighlightProps {
-  /**
-   * The highlight to be rendered.
-   * The highlight.content.image should contain the image data URL.
-   */
-  highlight: ViewportHighlight;
-
-  /**
-   * Callback triggered when the highlight position or size changes.
-   * @param rect - The updated highlight area with page number.
-   */
-  onChange?(rect: LTWHP): void;
-
-  /**
-   * Whether the highlight has been auto-scrolled into view.
-   */
-  isScrolledTo?: boolean;
-
-  /**
-   * Bounds for the draggable area.
-   */
-  bounds?: string | Element;
-
-  /**
-   * Callback triggered on right-click.
-   */
-  onContextMenu?(event: MouseEvent<HTMLDivElement>): void;
-
-  /**
-   * Called when the user starts editing (drag or resize).
-   */
-  onEditStart?(): void;
-
-  /**
-   * Called when the user finishes editing.
-   */
-  onEditEnd?(): void;
-
-  /**
-   * Custom CSS styles for the container.
-   */
-  style?: CSSProperties;
-
-  /**
-   * Custom drag handle icon. Replaces the default 6-dot grid icon.
-   */
-  dragIcon?: ReactNode;
-}
-```
-
-### Usage Example
-
-```tsx
-<ImageHighlight
-  highlight={highlight}
-  isScrolledTo={isScrolledTo}
-  bounds={highlightBindings.textLayer}
-  onChange={(boundingRect) => {
-    editHighlight(highlight.id, {
-      position: {
-        boundingRect: viewportToScaled(boundingRect),
-        rects: [],
-      },
-    });
-  }}
-  onEditStart={() => toggleEditInProgress(true)}
-  onEditEnd={() => toggleEditInProgress(false)}
-/>
-```
-
----
-
-## SignaturePad Component
-
-A modal component with a canvas for drawing signatures. Supports both mouse and touch input.
-
-### Import
-
-```tsx
-import { SignaturePad } from "react-pdf-highlighter-extended";
-```
-
-### Props
-
-```typescript
-interface SignaturePadProps {
-  /**
-   * Whether the signature pad modal is open.
-   */
-  isOpen: boolean;
-
-  /**
-   * Callback when signature is completed.
-   * @param dataUrl - The signature as a PNG data URL.
-   */
-  onComplete: (dataUrl: string) => void;
-
-  /**
-   * Callback when the modal is closed/cancelled.
-   */
-  onClose: () => void;
-
-  /**
-   * Canvas width in pixels.
-   * @default 400
-   */
-  width?: number;
-
-  /**
-   * Canvas height in pixels.
-   * @default 200
-   */
-  height?: number;
-}
-```
-
-### Usage Example
-
-```tsx
-const [isSignaturePadOpen, setIsSignaturePadOpen] = useState(false);
-const [pendingImageData, setPendingImageData] = useState<string | null>(null);
-
-const handleSignatureComplete = (dataUrl: string) => {
-  setPendingImageData(dataUrl);
-  setIsSignaturePadOpen(false);
-  // Enter image placement mode
-  setImageMode(true);
-};
-
-<SignaturePad
-  isOpen={isSignaturePadOpen}
-  onComplete={handleSignatureComplete}
-  onClose={() => setIsSignaturePadOpen(false)}
-  width={400}
-  height={200}
-/>
-```
-
----
-
-## PdfHighlighter Props (Image-related)
-
-### enableImageCreation
-
-```typescript
-enableImageCreation?(event: MouseEvent): boolean;
-```
-
-Condition to check before an image placement click is registered.
-When this returns `true`, clicking on the PDF will place the pending image.
-
-**Example:**
-```tsx
-<PdfHighlighter
-  enableImageCreation={() => imageMode}
-  // ...
-/>
-```
-
-### onImageClick
-
-```typescript
-onImageClick?(position: ScaledPosition): void;
-```
-
-Callback triggered when user clicks to place an image annotation.
-Provides the scaled position where the click occurred.
-
-**Example:**
-```tsx
-const handleImageClick = (position: ScaledPosition) => {
-  if (pendingImageData) {
-    const newHighlight = {
-      id: generateId(),
-      type: "image",
-      position,
-      content: { image: pendingImageData },
-    };
-    setHighlights([newHighlight, ...highlights]);
-    setPendingImageData(null);
-    setImageMode(false);
-  }
-};
-
-<PdfHighlighter
-  onImageClick={handleImageClick}
-  // ...
-/>
-```
-
----
-
-## Types
-
-### HighlightType
-
-```typescript
-type HighlightType = "text" | "area" | "freetext" | "image";
-```
-
-The type of highlight. Use this to determine which component to render:
-- `"text"` - TextHighlight for selected text
-- `"area"` - AreaHighlight for rectangular regions
-- `"freetext"` - FreetextHighlight for text annotations
-- `"image"` - ImageHighlight for images and signatures
-
 ### LTWHP
 
 ```typescript
-type LTWHP = {
-  left: number;    // X coordinate of top-left
-  top: number;     // Y coordinate of top-left
-  width: number;   // Width of rectangle
-  height: number;  // Height of rectangle
-  pageNumber: number;  // 1-indexed page number
-};
+interface LTWHP {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  pageNumber: number;
+}
 ```
-
-A rectangle as measured by the viewport, including page number.
 
 ### ScaledPosition
 
 ```typescript
-type ScaledPosition = {
+interface ScaledPosition {
   boundingRect: Scaled;
   rects: Array<Scaled>;
   usePdfCoordinates?: boolean;
-};
+}
 ```
 
-Position of a highlight with normalized coordinates.
-Suitable for storage and retrieval across different viewport sizes.
+### Scaled
+
+```typescript
+interface Scaled {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  width: number;
+  height: number;
+  pageNumber: number;
+}
+```
 
 ### ViewportHighlight
 
@@ -494,4 +359,69 @@ type ViewportHighlight<T extends Highlight = Highlight> = Omit<T, "position"> & 
 };
 ```
 
-A highlight with position converted to viewport coordinates for rendering.
+### ViewportPosition
+
+```typescript
+interface ViewportPosition {
+  boundingRect: LTWHP;
+  rects: Array<LTWHP>;
+}
+```
+
+---
+
+## CSS Classes
+
+### FreetextHighlight
+
+```css
+.FreetextHighlight { }
+.FreetextHighlight__container { }
+.FreetextHighlight__toolbar { }
+.FreetextHighlight__drag-handle { }
+.FreetextHighlight__edit-button { }
+.FreetextHighlight__style-button { }
+.FreetextHighlight__style-panel { }
+.FreetextHighlight__text { }
+.FreetextHighlight__input { }
+.FreetextHighlight--scrolledTo { }
+.FreetextHighlight--editing { }
+```
+
+### ImageHighlight
+
+```css
+.ImageHighlight { }
+.ImageHighlight__container { }
+.ImageHighlight__toolbar { }
+.ImageHighlight__drag-handle { }
+.ImageHighlight__content { }
+.ImageHighlight__image { }
+.ImageHighlight--scrolledTo { }
+```
+
+### DrawingHighlight
+
+```css
+.DrawingHighlight { }
+.DrawingHighlight__container { }
+.DrawingHighlight__toolbar { }
+.DrawingHighlight__drag-handle { }
+.DrawingHighlight__content { }
+.DrawingHighlight__image { }
+.DrawingHighlight--scrolledTo { }
+```
+
+### SignaturePad
+
+```css
+.SignaturePad__overlay { }
+.SignaturePad__modal { }
+.SignaturePad__title { }
+.SignaturePad__canvas { }
+.SignaturePad__buttons { }
+.SignaturePad__button { }
+.SignaturePad__button--clear { }
+.SignaturePad__button--cancel { }
+.SignaturePad__button--done { }
+```

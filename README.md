@@ -1,328 +1,411 @@
-# react-pdf-highlighter-extended
+# react-pdf-highlighter-plus
 
-[![Node.js CI](https://github.com/QuocVietHa08/react-pdf-highlighter-plus/actions/workflows/node.js.yml/badge.svg)](https://github.com/QuocVietHa08/react-pdf-highlighter-plus/actions/workflows/node.js.yml)
-[![npm version](https://badge.fury.io/js/react-pdf-highlighter-extended.svg)](https://badge.fury.io/js/react-pdf-highlighter-extended)
+<p align="center">
+  <a href="https://github.com/QuocVietHa08/react-pdf-highlighter-plus/stargazers">
+    <img src="https://img.shields.io/github/stars/QuocVietHa08/react-pdf-highlighter-plus?style=social" alt="GitHub stars">
+  </a>
+  <a href="https://github.com/QuocVietHa08/react-pdf-highlighter-plus/actions/workflows/node.js.yml">
+    <img src="https://github.com/QuocVietHa08/react-pdf-highlighter-plus/actions/workflows/node.js.yml/badge.svg" alt="Node.js CI">
+  </a>
+  <a href="https://badge.fury.io/js/react-pdf-highlighter-extended">
+    <img src="https://badge.fury.io/js/react-pdf-highlighter-extended.svg" alt="npm version">
+  </a>
+  <a href="https://www.npmjs.com/package/react-pdf-highlighter-extended">
+    <img src="https://img.shields.io/npm/dm/react-pdf-highlighter-extended.svg" alt="npm downloads">
+  </a>
+</p>
 
-`react-pdf-highlighter-extended` is a [React](https://reactjs.org/) library that provides a highly customisable annotation experience for PDF documents on the web. It supports multiple highlight types including text highlights, area highlights, freetext notes, and image/signature annotations. It leverages [PDF.js](https://github.com/mozilla/pdf.js) as its viewer. The highlight data format is also independent of the viewport, making it suitable for saving on a server.
+<p align="center">
+  <strong>A powerful React library for annotating PDF documents</strong>
+</p>
+
+<p align="center">
+  Text highlights • Area highlights • Freetext notes • Images & signatures • Freehand drawing • PDF export
+</p>
+
+---
+
+## Overview
+
+`react-pdf-highlighter-extended` provides a highly customizable annotation experience for PDF documents in React applications. Built on [PDF.js](https://github.com/mozilla/pdf.js), it stores highlight positions in viewport-independent coordinates, making them portable across different screen sizes.
 
 ## Features
 
-- **Text Highlights**: Select and highlight text in PDFs
-- **Area Highlights**: Draw rectangular regions on PDFs
-- **Freetext Notes**: Add draggable, editable text annotations with customizable styling
-- **Image & Signature Highlights**: Upload images or draw signatures and place them on PDFs
-- **Zoom Support**: Full zoom functionality with position-independent highlight data
-- **Customizable**: Exposed styling on all components
+| Feature | Description |
+|---------|-------------|
+| **Text Highlights** | Select and highlight text passages |
+| **Area Highlights** | Draw rectangular regions on PDFs |
+| **Freetext Notes** | Draggable, editable sticky notes with custom styling |
+| **Images & Signatures** | Upload images or draw signatures directly on PDFs |
+| **Freehand Drawing** | Draw freehand annotations with customizable stroke |
+| **PDF Export** | Export annotated PDF with all highlights embedded |
+| **Zoom Support** | Full zoom functionality with position-independent data |
+| **Fully Customizable** | Exposed styling on all components |
 
-This originally started as a fork of [`react-pdf-highlighter`](https://github.com/agentcooper/react-pdf-highlighter) but so much has been refactored and redesigned that it would be a burden to pull it to the original repo. Some of these changes include: addition of `HighlightContext`, `PdfHighlighterContext`, and `MonitoredHighlightContainer`; zoom support; exposed styling on all components; freetext and image highlight support; and numerous bugfixes.
+## Quick Links
 
-## Table of Contents
+| Resource | Link |
+|----------|------|
+| Live Demo | [View Demo](https://danielarnould.github.io/react-pdf-highlighter-extended/example-app/) |
+| Documentation | [API Docs](https://danielarnould.github.io/react-pdf-highlighter-extended/docs/) |
+| NPM Package | [npm](https://www.npmjs.com/package/react-pdf-highlighter-extended) |
 
-- [Documentation](#documentation)
-- [Example](#example)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [PdfLoader](#pdfloader)
-    - [Example loading document with `string`](#example-loading-document-with-string)
-    - [Example loading document with `DocumentInitParameters`](#example-loading-document-with-documentinitparameters)
-  - [PdfHighlighter](#pdfhighlighter)
-    - [Example](#example-1)
-  - [User-defined HighlightContainer](#user-defined-highlightcontainer)
-    - [Example](#example-2)
-    - [Example with categories and custom highlights](#example-with-categories-and-custom-highlights)
-    - [Example with comments and `MonitoredHighlightContainer`](#example-with-comments-and-monitoredhighlightcontainer)
-  - [Tips](#tips)
-    - [Example](#example-3)
-- [Contribute](#contribute)
+---
 
-## Documentation
+## Installation
 
-If you just want to use this library, you can find comprehensive docs for all aspects by visiting the [official documentation page](https://danielarnould.github.io/react-pdf-highlighter-extended/docs/).
+```bash
+npm install react-pdf-highlighter-extended
+```
 
-If you wish to contribute, most internal components are documented in code, though not to the same depth.
+---
 
-## Example
+## Quick Start
 
-For a live demo check https://danielarnould.github.io/react-pdf-highlighter-extended/example-app/.
+### Basic Setup
 
-To run the example app locally:
+```tsx
+import {
+  PdfLoader,
+  PdfHighlighter,
+  TextHighlight,
+  AreaHighlight,
+  useHighlightContainerContext,
+} from "react-pdf-highlighter-extended";
+
+function App() {
+  const [highlights, setHighlights] = useState([]);
+
+  return (
+    <PdfLoader document="https://example.com/document.pdf">
+      {(pdfDocument) => (
+        <PdfHighlighter
+          pdfDocument={pdfDocument}
+          highlights={highlights}
+          enableAreaSelection={(e) => e.altKey}
+        >
+          <HighlightContainer />
+        </PdfHighlighter>
+      )}
+    </PdfLoader>
+  );
+}
+
+function HighlightContainer() {
+  const { highlight, isScrolledTo } = useHighlightContainerContext();
+
+  return highlight.type === "text" ? (
+    <TextHighlight highlight={highlight} isScrolledTo={isScrolledTo} />
+  ) : (
+    <AreaHighlight highlight={highlight} isScrolledTo={isScrolledTo} />
+  );
+}
+```
+
+---
+
+## Highlight Types
+
+### 1. Text Highlights
+
+Select text in the PDF to create highlights.
+
+```tsx
+<TextHighlight
+  highlight={highlight}
+  isScrolledTo={isScrolledTo}
+  style={{ background: "rgba(255, 226, 143, 1)" }}
+/>
+```
+
+### 2. Area Highlights
+
+Hold `Alt` and drag to create rectangular highlights.
+
+```tsx
+<PdfHighlighter
+  enableAreaSelection={(event) => event.altKey}
+  // ...
+>
+```
+
+### 3. Freetext Notes
+
+Create draggable, editable text annotations with customizable styling.
+
+```tsx
+import { FreetextHighlight } from "react-pdf-highlighter-extended";
+
+<PdfHighlighter
+  enableFreetextCreation={() => freetextMode}
+  onFreetextClick={(position) => {
+    addHighlight({ type: "freetext", position, content: { text: "Note" } });
+  }}
+>
+
+// In your highlight container:
+<FreetextHighlight
+  highlight={highlight}
+  onChange={handlePositionChange}
+  onTextChange={handleTextChange}
+  onStyleChange={handleStyleChange}
+  color="#333333"
+  backgroundColor="#ffffc8"
+  fontSize="14px"
+/>
+```
+
+**Features:**
+- Drag to reposition
+- Click to edit text
+- Built-in style panel (colors, font size, font family)
+- Toolbar appears on hover
+
+[Full Documentation →](docs/freetext-highlights.md)
+
+### 4. Images & Signatures
+
+Upload images or draw signatures and place them on PDFs.
+
+```tsx
+import { ImageHighlight, SignaturePad } from "react-pdf-highlighter-extended";
+
+// Signature pad modal
+<SignaturePad
+  isOpen={isOpen}
+  onComplete={(dataUrl) => setPendingImage(dataUrl)}
+  onClose={() => setIsOpen(false)}
+/>
+
+// In your highlight container:
+<ImageHighlight
+  highlight={highlight}
+  onChange={handlePositionChange}
+  onEditStart={() => toggleEditInProgress(true)}
+  onEditEnd={() => toggleEditInProgress(false)}
+/>
+```
+
+**Features:**
+- Upload any image format
+- Draw signatures with mouse or touch
+- Drag to reposition
+- Resize while maintaining aspect ratio
+- Toolbar appears on hover
+
+[Full Documentation →](docs/image-signature-highlights.md)
+
+### 5. Freehand Drawing
+
+Draw freehand annotations directly on PDFs.
+
+```tsx
+import { DrawingHighlight } from "react-pdf-highlighter-extended";
+
+<PdfHighlighter
+  enableDrawingCreation={() => drawingMode}
+  onDrawingComplete={(position, dataUrl) => {
+    addHighlight({ type: "drawing", position, content: { image: dataUrl } });
+  }}
+  drawingConfig={{
+    strokeColor: "#ff0000",
+    strokeWidth: 2,
+  }}
+>
+
+// In your highlight container:
+<DrawingHighlight
+  highlight={highlight}
+  onChange={handlePositionChange}
+/>
+```
+
+**Features:**
+- Freehand drawing with mouse or touch
+- Customizable stroke color and width
+- Stored as PNG for PDF export compatibility
+- Drag to reposition
+
+[Full Documentation →](docs/drawing-highlights.md)
+
+---
+
+## PDF Export
+
+Export your annotated PDF with all highlights embedded.
+
+```tsx
+import { exportPdf } from "react-pdf-highlighter-extended";
+
+const handleExport = async () => {
+  const pdfBytes = await exportPdf(pdfUrl, highlights, {
+    textHighlightColor: "rgba(255, 226, 143, 0.5)",
+    areaHighlightColor: "rgba(255, 226, 143, 0.5)",
+    onProgress: (current, total) => console.log(`${current}/${total} pages`),
+  });
+
+  // Download the file
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "annotated.pdf";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+```
+
+**Supported highlight types:**
+- Text highlights (colored rectangles)
+- Area highlights (colored rectangles)
+- Freetext notes (background + wrapped text)
+- Images & signatures (embedded PNG/JPG)
+- Freehand drawings (embedded PNG)
+
+[Full Documentation →](docs/pdf-export.md)
+
+---
+
+## Component Architecture
 
 ```
-git clone https://github.com/DanielArnould/react-pdf-highlighter-extended.git
+┌─────────────────────────────────────────────────────┐
+│                    PdfLoader                         │
+│  Loads PDF document via PDF.js                       │
+│                                                      │
+│  ┌───────────────────────────────────────────────┐  │
+│  │               PdfHighlighter                   │  │
+│  │  Manages viewer, events, coordinate systems   │  │
+│  │                                               │  │
+│  │  ┌─────────────────────────────────────────┐  │  │
+│  │  │      User-defined HighlightContainer    │  │  │
+│  │  │  Renders highlights using context hooks │  │  │
+│  │  │                                         │  │  │
+│  │  │  • TextHighlight                        │  │  │
+│  │  │  • AreaHighlight                        │  │  │
+│  │  │  • FreetextHighlight                    │  │  │
+│  │  │  • ImageHighlight                       │  │  │
+│  │  │  • DrawingHighlight                     │  │  │
+│  │  └─────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────┘
+```
+
+### Context Hooks
+
+| Hook | Purpose |
+|------|---------|
+| `usePdfHighlighterContext()` | Viewer utilities: `scrollToHighlight`, `setTip`, `getCurrentSelection` |
+| `useHighlightContainerContext()` | Per-highlight utilities: `highlight`, `viewportToScaled`, `screenshot` |
+
+---
+
+## Coordinate Systems
+
+The library uses two coordinate systems:
+
+| System | Description | Use Case |
+|--------|-------------|----------|
+| **Viewport** | Pixel coordinates relative to current zoom | Rendering on screen |
+| **Scaled** | Normalized (0-1) coordinates relative to page | Storage & retrieval |
+
+```tsx
+// Converting between systems
+const { viewportToScaled } = useHighlightContainerContext();
+
+// Save position (viewport → scaled)
+const scaledPosition = viewportToScaled(boundingRect);
+
+// Highlights are automatically converted to viewport when rendering
+```
+
+---
+
+## Customization
+
+### Custom Highlight Interface
+
+```tsx
+interface MyHighlight extends Highlight {
+  category: string;
+  comment?: string;
+  author?: string;
+}
+
+// Use the generic type
+const { highlight } = useHighlightContainerContext<MyHighlight>();
+```
+
+### Custom Styling
+
+```tsx
+// Via props
+<TextHighlight
+  highlight={highlight}
+  style={{ background: categoryColors[highlight.category] }}
+/>
+
+// Via CSS classes
+.TextHighlight { }
+.AreaHighlight { }
+.FreetextHighlight { }
+.ImageHighlight { }
+.DrawingHighlight { }
+```
+
+### Tips and Popups
+
+```tsx
+import { MonitoredHighlightContainer } from "react-pdf-highlighter-extended";
+
+<MonitoredHighlightContainer
+  highlightTip={{
+    position: highlight.position,
+    content: <MyPopup highlight={highlight} />,
+  }}
+>
+  <TextHighlight highlight={highlight} />
+</MonitoredHighlightContainer>
+```
+
+---
+
+## Running Locally
+
+```bash
+git clone https://github.com/QuocVietHa08/react-pdf-highlighter-plus.git
+cd react-pdf-highlighter-plus
 npm install
 npm run dev
 ```
 
-## Installation
+---
 
-`npm install react-pdf-highlighter-extended --save`
+## API Reference
 
-## Usage
+See the full [API Reference](docs/api-reference.md) for detailed documentation on all components and types.
 
-Here are some simple usage examples of this library to help you get started with your application. Please note that these examples and explanations are not exhaustive and many additional props are not shown. To see more extensive usage, have a look at the example app or refer to the documentation.
+---
 
-### PdfLoader
+## Contributing
 
-The PdfLoader creates a container to load PDF documents with PDF.js.
+Contributions are welcome! Please:
 
-#### Example loading document with `string`
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-```javascript
-const url = "https://arxiv.org/pdf/1708.08021.pdf";
+For bugs, please [open an issue](https://github.com/QuocVietHa08/react-pdf-highlighter-plus/issues) with clear reproduction steps.
 
-<PdfLoader document={url}>
-  {(pdfDocument) => (/* PdfHighlighter component goes here */)}
-</PdfLoader>;
-```
+---
 
-#### Example loading document with `DocumentInitParameters`
+## License
 
-You can also pass any extra parameters to the PdfLoader document that are accepted by PDF.js. For example, you could use this to specify HTTP headers for retrieving your document.
+MIT
 
-```javascript
-const pdfDocument: Partial<DocumentInitParameters> = {
-  url: "https://arxiv.org/pdf/1708.08021.pdf",
-  httpHeaders: {
-      "Authorization": "Bearer JWT_TOKEN_HERE"
-  },
-  password: "PDF_PASSWORD_HERE"
-}
+---
 
-<PdfLoader document={pdfDocument}>
-  {(pdfDocument) => (/* PdfHighlighter component goes here */)}
-</PdfLoader>
-```
+## Credits
 
-### PdfHighlighter
-
-The PdfHighlighter provides a PDF.js viewer along with various helpful event listeners and niceties for creating a fully-fledged and robust highlighter. It does **NOT** render any highlights on its own. Instead, it expects a user-defined Highlight Container as its child, which will be rendered and given context for each individual highlights. Please also note for styling that the PDF.js viewer renders its pages with `absolute` positioning.
-
-#### Example
-
-```javascript
-const myPdfHighlighter = () => {
-  const [highlights, setHighlights] = useState<Array<Highlight>>([]);
-
-  /** Refs for PdfHighlighter utilities
-   * These contain numerous helpful functions, such as scrollToHighlight,
-   * getCurrentSelection, setTip, and many more
-   */
-  const highlighterUtilsRef = useRef<PdfHighlighterUtils>();
-
-return (
-  <PdfLoader document={url}>
-    {(pdfDocument) => (
-      <PdfHighlighter
-        enableAreaSelection={(event) => event.altKey}
-        pdfDocument={pdfDocument}
-        utilsRef={(_pdfHighlighterUtils) => {
-          highlighterUtilsRef.current = _pdfHighlighterUtils;
-        }}
-        selectionTip={<ExpandableTip />} // Component will render as a tip upon any selection
-        highlights={highlights}
-      >
-        {/* User-defined HighlightContainer component goes here */}
-      </PdfHighlighter>
-    )}
-  </PdfLoader>
-);
-}
-```
-
-### User-defined HighlightContainer
-
-You must create your own Highlight Container which will be rendered as needed for each highlight inside the PdfHighlighter. This container will receive the context it needs through the `useHighlightContainerContext` hook. Additionally, you can access numerous useful utility functions through the `usePdfHighlighterContext` hook. This library also provides two ready-to-use componenets, `TextHighlight` and `AreaHighlight`, which you can place inside your container to easily render some standard highlight styles.
-
-#### Example
-
-```javascript
-interface MyHighlightContainerProps {
-  editHighlight: (idToUpdate: string, edit: Partial<Highlight>) => void; // This could update highlights in the parent
-}
-
-const MyHighlightContainer = ({
-  editHighlight,
-}: MyHighlightContainerProps) => {
-
-  const {
-    highlight, // The highlight being rendred
-    viewportToScaled, // Convert a highlight position to platform agnostic coords (useful for saving edits)
-    screenshot, // Screenshot a bounding rectangle
-    isScrolledTo, // Whether the highlight has been auto-scrolled to
-    highlightBindings, // Whether the highlight has been auto-scrolled to
-  } = useHighlightContainerContext();
-
-  const {
-    currentTip,
-    setTip,
-    toggleEditInProgress,
-    isEditInProgress
-  } = useTipViewerUtils();
-
-  const { toggleEditInProgress } =
-    usePdfHighlighterContext();
-
-  const isTextHighlight = !Boolean(
-    highlight.content && highlight.content.image
-  );
-
-  const component = isTextHighlight ? (
-    <TextHighlight
-      isScrolledTo={isScrolledTo}
-      highlight={highlight}
-    />
-  ) : (
-    <AreaHighlight
-      isScrolledTo={isScrolledTo}
-      highlight={highlight}
-      onChange={(boundingRect) => {
-        const edit = {
-          position: {
-            boundingRect: viewportToScaled(boundingRect),
-            rects: [],
-          },
-          content: {
-            image: screenshot(boundingRect),
-          },
-        };
-
-        editHighlight(highlight.id, edit);
-        toggleEditInProgress(false);
-      }}
-      bounds={highlightBindings.textLayer}
-      onEditStart={() => toggleEditInProgress(true)}
-    />
-  );
-
-  return (component);
-};
-```
-
-#### Example with categories and custom highlights
-
-The power of a user-defined highlight container is that you can customise your highlight rendering as much as you want. For example, here is how you could extend your application to support highlights with categories.
-
-```javascript
-export interface MyCustomHighlight extends Highlight {
-    category: string
-}
-```
-
-You could then use this in your HighlightContainer to render highlights with different colors depending on their category.
-
-```javascript
-// Same logic as above examples
-
-  const {
-    highlight,
-    viewportToScaled,
-    screenshot,
-    isScrolledTo,
-    highlightBindings,
-  } = useHighlightContainerContext<MyCustomHighlight>();
-
-const category = highlight.category;
-let highlightColor = "rgba(199,227,114,1)";
-
-if (category === "red") {
-  highlightColor = "rgba(239,90,104,1)";
-} else if (category === "blue") {
-  highlightColor = "rgba(154,208,220,1)";
-}
-
-const component = isTextHighlight ? (
-  <TextHighlight highlight={highlight} style={{ background: highlightColor }} />
-) : (
-  <AreaHighlight
-    highlight={highlight}
-    style={{
-      background: highlightColor,
-    }}
-  />
-);
-
-// Same return as above examples
-```
-
-#### Example with comments and `MonitoredHighlightContainer`
-
-Very often you might want to display a popup, tip, or comment if the user hovers over a highlight. To facilitate this, this library offers a `MonitoredHighlightContainer`, which you can wrap around your rendered highlight to create a mouse listener both over the highlight and any popup content you might display above it. Combining this with custom highlights allows you to associate all sorts of displayable information with your highlights.
-
-```javascript
-export interface MyCustomHighlight extends Highlight {
-    comment?: string
-}
-
-const MyHighlightPopup = (highlight: ViewportHighlight<MyCustomHighlight>) => {
-  return highlight.comment ? (
-    <div>{highlight.comment}</div>
-  ) : (
-    <div>Highlight has no comment</div>
-  );
-};
-
-const MyHighlightContainer = ({
-  editHighlight,
-}: MyHighlightContainerProps) => {
-
-  // Same hooks as above example
-  // Same logic as above example
-
-  const highlightTip: Tip = {
-    position: highlight.position,
-    content: <HighlightPopup highlight={highlight} />
-  };
-
-  return (
-    <MonitoredHighlightContainer
-      highlightTip={highlightTip}
-      key={highlight.id}
-      children={component}
-    />
-  );
-};
-```
-
-### Tips
-
-At any point you can use `getTip()` and `setTip()` from the `usePdfHighlighterContext()` hook or the `utilsRef` property on `PdfHighlighter`. To set a tip, simply provide the position of a highlight, ghost highlight, or selection and the component you wish to render. This will automatically place your tip in the middle and slightly above your given highlight (or below if necessary). However, since the `PdfHighlighter` is not aware of the state of your tip, you must tell it to update its position if your tip ever changes size and you want it to remain above/below your given highlight. Fortunately, you can do this quite easily with `updateTipPosition()` within a `PdfHighlighterContext`.
-
-#### Example
-
-```javascript
-const MyExpandableTip = () => {
-  const [compact, setCompact] = useState(true);
-
-  const { getCurrentSelection, updateTipPosition } =
-    usePdfHighlighterContext();
-
-  useLayoutEffect(() => {
-    updateTipPosition!();
-  }, [compact]);
-
-  return (
-    <div className="Tip">
-      {compact ? (
-        <button
-          onClick={() => {
-            setCompact(false);
-            if (getCurrentSelection()) {
-              getCurrentSelection().makeGhostHighlight();
-            }
-          }}
-        >
-          Expand Tip
-        </button>
-      ) : (
-        <div style={{ padding: "50px" }}>Expanded content</div>
-      )}
-    </div>
-  );
-};
-```
-
-## Contribute
-
-If you have a bug to report, please add it as an issue with clear steps to reproduce it.
-
-If you have a feature request, please add it as an issue or make a pull request. If you do wish to make a pull request, consider checking whether your feature has already been implemented or tested in the original [`react-pdf-highlighter`](https://github.com/agentcooper/react-pdf-highlighter).
+Originally forked from [`react-pdf-highlighter`](https://github.com/agentcooper/react-pdf-highlighter) with significant architectural changes including context-based APIs, zoom support, freetext/image/drawing highlights, and PDF export functionality.
