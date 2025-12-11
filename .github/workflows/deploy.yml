@@ -31,9 +31,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install example dependencies
-        run: cd example && npm install
-
       - name: Build library
         run: npm run build:esm
 
@@ -41,7 +38,9 @@ jobs:
         run: npm run build:copy-styles
 
       - name: Build example
-        run: cd example && npm run build
+        run: |
+          cd example
+          npx vite build
 
       - name: Build docs
         run: npm run build:docs
