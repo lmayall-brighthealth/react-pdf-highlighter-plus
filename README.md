@@ -27,7 +27,7 @@
 
 ## Overview
 
-`react-pdf-highlighter-extended` provides a highly customizable annotation experience for PDF documents in React applications. Built on [PDF.js](https://github.com/mozilla/pdf.js), it stores highlight positions in viewport-independent coordinates, making them portable across different screen sizes.
+`react-pdf-highlighter-plus` provides a highly customizable annotation experience for PDF documents in React applications. Built on [PDF.js](https://github.com/mozilla/pdf.js), it stores highlight positions in viewport-independent coordinates, making them portable across different screen sizes.
 
 ## Features
 
@@ -46,13 +46,13 @@
 
 | Resource | Link |
 |----------|------|
-| Live Demo | [View Demo](https://danielarnould.github.io/react-pdf-highlighter-extended/example-app/) |
-| Documentation | [API Docs](https://danielarnould.github.io/react-pdf-highlighter-extended/docs/) |
+| Live Demo | [View Demo](https://quocvietha08.github.io/react-pdf-highlighter-plus/example-app/) |
+| Documentation | [API Docs](https://quocvietha08.github.io/react-pdf-highlighter-plus/docs/) |
 | NPM Package | [npm](https://www.npmjs.com/package/react-pdf-highlighter-extended) |
 
 ---
 
-## Installation
+## Installation (Coming soon)
 
 ```bash
 npm install react-pdf-highlighter-extended
