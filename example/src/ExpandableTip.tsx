@@ -1,11 +1,12 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import CommentForm from "./CommentForm";
 import {
   GhostHighlight,
   PdfSelection,
   usePdfHighlighterContext,
 } from "./react-pdf-highlighter-extended";
-import "./style/ExpandableTip.css";
+import { Button } from "./components/ui/button";
+import { Plus } from "lucide-react";
 
 interface ExpandableTipProps {
   addHighlight: (highlight: GhostHighlight, comment: string) => void;
@@ -27,18 +28,19 @@ const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
   }, [compact]);
 
   return (
-    <div className="Tip">
+    <div className="rounded-lg border bg-popover p-1 shadow-lg">
       {compact ? (
-        <button
-          className="Tip__compact"
+        <Button
+          size="sm"
           onClick={() => {
             setCompact(false);
             selectionRef.current = getCurrentSelection();
             selectionRef.current!.makeGhostHighlight();
           }}
         >
+          <Plus className="mr-1 h-4 w-4" />
           Add highlight
-        </button>
+        </Button>
       ) : (
         <CommentForm
           placeHolder="Your comment..."

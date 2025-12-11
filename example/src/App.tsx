@@ -1,10 +1,11 @@
-import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import CommentForm from "./CommentForm";
 import ContextMenu, { ContextMenuProps } from "./ContextMenu";
 import ExpandableTip from "./ExpandableTip";
 import HighlightContainer from "./HighlightContainer";
 import Sidebar from "./Sidebar";
-import Toolbar from "./Toolbar";
+import { Header } from "./components/Header";
+import { FloatingActions } from "./components/FloatingActions";
 import {
   DrawingStroke,
   GhostHighlight,
@@ -55,6 +56,9 @@ const App = () => {
   const [drawingMode, setDrawingMode] = useState<boolean>(false);
   const [drawingStrokeColor, setDrawingStrokeColor] = useState<string>("#000000");
   const [drawingStrokeWidth, setDrawingStrokeWidth] = useState<number>(3);
+  // Sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [scrolledToHighlightId, setScrolledToHighlightId] = useState<string | null>(null);
 
   // Refs for PdfHighlighter utilities
   const highlighterUtilsRef = useRef<PdfHighlighterUtils>();
@@ -82,6 +86,21 @@ const App = () => {
     };
   }, [contextMenu]);
 
+  // Track scrolled highlight from hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const id = parseIdFromHash();
+      setScrolledToHighlightId(id || null);
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    handleHashChange(); // Check initial hash
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
+
   const handleContextMenu = (
     event: MouseEvent<HTMLDivElement>,
     highlight: ViewportHighlight<CommentedHighlight>,
@@ -101,7 +120,7 @@ const App = () => {
     setHighlights([{ ...highlight, comment, id: getNextId() }, ...highlights]);
   };
 
-  const deleteHighlight = (highlight: ViewportHighlight | Highlight) => {
+  const deleteHighlight = (highlight: ViewportHighlight | Highlight | CommentedHighlight) => {
     console.log("Deleting highlight", highlight);
     setHighlights(highlights.filter((h) => h.id != highlight.id));
   };
@@ -224,13 +243,23 @@ const App = () => {
     }
   };
 
+  const handleZoomIn = () => {
+    const currentScale = pdfScaleValue || 1;
+    setPdfScaleValue(Math.min(currentScale + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    const currentScale = pdfScaleValue || 1;
+    setPdfScaleValue(Math.max(currentScale - 0.25, 0.5));
+  };
+
   const resetHighlights = () => {
     setHighlights([]);
   };
 
-  const getHighlightById = (id: string) => {
+  const getHighlightById = useCallback((id: string) => {
     return highlights.find((highlight) => highlight.id === id);
-  };
+  }, [highlights]);
 
   // Open comment tip and update highlight with new user input
   const editComment = (highlight: ViewportHighlight<CommentedHighlight>) => {
@@ -254,14 +283,22 @@ const App = () => {
     highlighterUtilsRef.current.toggleEditInProgress(true);
   };
 
+  // Handle editing from sidebar - scroll to highlight first, then prompt user
+  const handleEditFromSidebar = (highlight: CommentedHighlight) => {
+    // Update the hash to scroll to the highlight
+    document.location.hash = `highlight-${highlight.id}`;
+    // The actual edit tip will need to be triggered after scrolling
+    // For now, we just scroll - user can right-click to edit
+  };
+
   // Scroll to highlight based on hash in the URL
-  const scrollToHighlightFromHash = () => {
+  const scrollToHighlightFromHash = useCallback(() => {
     const highlight = getHighlightById(parseIdFromHash());
 
     if (highlight && highlighterUtilsRef.current) {
       highlighterUtilsRef.current.scrollToHighlight(highlight);
     }
-  };
+  }, [getHighlightById]);
 
   // Hash listeners for autoscrolling to highlights
   useEffect(() => {
@@ -273,71 +310,84 @@ const App = () => {
   }, [scrollToHighlightFromHash]);
 
   return (
-    <div className="App" style={{ display: "flex", height: "100vh" }}>
-      <Sidebar
-        highlights={highlights}
-        resetHighlights={resetHighlights}
-        toggleDocument={toggleDocument}
+    <div className="flex h-screen flex-col bg-background">
+      {/* Header */}
+      <Header
+        pdfScaleValue={pdfScaleValue}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onExportPdf={handleExportPdf}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
-      <div
-        style={{
-          height: "100vh",
-          width: "75vw",
-          overflow: "hidden",
-          position: "relative",
-          flexGrow: 1,
-        }}
-      >
-        <Toolbar
-          setPdfScaleValue={(value) => setPdfScaleValue(value)}
-          toggleHighlightPen={() => setHighlightPen(!highlightPen)}
-          toggleFreetextMode={() => setFreetextMode(!freetextMode)}
-          isFreetextMode={freetextMode}
-          onAddImage={handleAddImage}
-          onAddSignature={handleAddSignature}
-          onExportPdf={handleExportPdf}
-          isDrawingMode={drawingMode}
-          onToggleDrawingMode={() => setDrawingMode(!drawingMode)}
-          drawingStrokeColor={drawingStrokeColor}
-          onDrawingColorChange={setDrawingStrokeColor}
-          drawingStrokeWidth={drawingStrokeWidth}
-          onDrawingWidthChange={setDrawingStrokeWidth}
+
+      {/* Main content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar
+          highlights={highlights}
+          resetHighlights={resetHighlights}
+          toggleDocument={toggleDocument}
+          scrolledToHighlightId={scrolledToHighlightId}
+          onEditHighlight={handleEditFromSidebar}
+          onDeleteHighlight={deleteHighlight}
+          isOpen={sidebarOpen}
         />
-        <PdfLoader document={url}>
-          {(pdfDocument) => (
-            <PdfHighlighter
-              enableAreaSelection={(event) => event.altKey}
-              pdfDocument={pdfDocument}
-              onScrollAway={resetHash}
-              utilsRef={(_pdfHighlighterUtils) => {
-                highlighterUtilsRef.current = _pdfHighlighterUtils;
-              }}
-              pdfScaleValue={pdfScaleValue}
-              textSelectionColor={highlightPen ? "rgba(255, 226, 143, 1)" : undefined}
-              onSelection={highlightPen ? (selection) => addHighlight(selection.makeGhostHighlight(), "") : undefined}
-              selectionTip={highlightPen ? undefined : <ExpandableTip addHighlight={addHighlight} />}
-              highlights={highlights}
-              enableFreetextCreation={() => freetextMode}
-              onFreetextClick={handleFreetextClick}
-              enableImageCreation={() => imageMode}
-              onImageClick={handleImageClick}
-              enableDrawingMode={drawingMode}
-              onDrawingComplete={handleDrawingComplete}
-              onDrawingCancel={handleDrawingCancel}
-              drawingStrokeColor={drawingStrokeColor}
-              drawingStrokeWidth={drawingStrokeWidth}
-              style={{
-                height: "calc(100% - 41px)",
-              }}
-            >
-              <HighlightContainer
-                editHighlight={editHighlight}
-                deleteHighlight={(id) => deleteHighlight({ id } as Highlight)}
-                onContextMenu={handleContextMenu}
-              />
-            </PdfHighlighter>
-          )}
-        </PdfLoader>
+
+        {/* PDF Viewer */}
+        <div className="relative flex-1 overflow-hidden">
+          <PdfLoader document={url}>
+            {(pdfDocument) => (
+              <PdfHighlighter
+                enableAreaSelection={(event) => event.altKey}
+                pdfDocument={pdfDocument}
+                onScrollAway={resetHash}
+                utilsRef={(_pdfHighlighterUtils) => {
+                  highlighterUtilsRef.current = _pdfHighlighterUtils;
+                }}
+                pdfScaleValue={pdfScaleValue}
+                textSelectionColor={highlightPen ? "rgba(255, 226, 143, 1)" : undefined}
+                onSelection={highlightPen ? (selection) => addHighlight(selection.makeGhostHighlight(), "") : undefined}
+                selectionTip={highlightPen ? undefined : <ExpandableTip addHighlight={addHighlight} />}
+                highlights={highlights}
+                enableFreetextCreation={() => freetextMode}
+                onFreetextClick={handleFreetextClick}
+                enableImageCreation={() => imageMode}
+                onImageClick={handleImageClick}
+                enableDrawingMode={drawingMode}
+                onDrawingComplete={handleDrawingComplete}
+                onDrawingCancel={handleDrawingCancel}
+                drawingStrokeColor={drawingStrokeColor}
+                drawingStrokeWidth={drawingStrokeWidth}
+                style={{
+                  height: "100%",
+                }}
+              >
+                <HighlightContainer
+                  editHighlight={editHighlight}
+                  deleteHighlight={(id) => deleteHighlight({ id } as Highlight)}
+                  onContextMenu={handleContextMenu}
+                />
+              </PdfHighlighter>
+            )}
+          </PdfLoader>
+
+          {/* Floating Actions */}
+          <FloatingActions
+            highlightPen={highlightPen}
+            onToggleHighlightPen={() => setHighlightPen(!highlightPen)}
+            freetextMode={freetextMode}
+            onToggleFreetextMode={() => setFreetextMode(!freetextMode)}
+            onAddImage={handleAddImage}
+            onAddSignature={handleAddSignature}
+            drawingMode={drawingMode}
+            onToggleDrawingMode={() => setDrawingMode(!drawingMode)}
+            drawingStrokeColor={drawingStrokeColor}
+            onDrawingColorChange={setDrawingStrokeColor}
+            drawingStrokeWidth={drawingStrokeWidth}
+            onDrawingWidthChange={setDrawingStrokeWidth}
+          />
+        </div>
       </div>
 
       {contextMenu && <ContextMenu {...contextMenu} />}
