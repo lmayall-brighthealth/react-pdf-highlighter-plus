@@ -135,6 +135,12 @@ export interface PdfHighlighterProps {
   enableAreaSelection?(event: MouseEvent): boolean;
 
   /**
+   * When true, shows crosshair cursor indicating area selection mode is active.
+   * Use this when area selection should be persistently enabled (not just on modifier key).
+   */
+  areaSelectionMode?: boolean;
+
+  /**
    * Optional CSS styling for the rectangular mouse selection.
    */
   mouseSelectionStyle?: CSSProperties;
@@ -252,6 +258,7 @@ export const PdfHighlighter = ({
   onRemoveGhostHighlight,
   selectionTip,
   enableAreaSelection,
+  areaSelectionMode,
   mouseSelectionStyle,
   pdfDocument,
   children,
@@ -679,6 +686,7 @@ export const PdfHighlighter = ({
   if (isFreetextMode) containerClassName += ' PdfHighlighter--freetext-mode';
   if (isImageMode) containerClassName += ' PdfHighlighter--image-mode';
   if (enableDrawingMode) containerClassName += ' PdfHighlighter--drawing-mode';
+  if (areaSelectionMode) containerClassName += ' PdfHighlighter--area-mode';
 
   return (
     <PdfHighlighterContext.Provider value={pdfHighlighterUtils}>

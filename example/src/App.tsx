@@ -50,6 +50,7 @@ const App = () => {
   const [highlightPen, setHighlightPen] = useState<boolean>(false);
   const [freetextMode, setFreetextMode] = useState<boolean>(false);
   const [imageMode, setImageMode] = useState<boolean>(false);
+  const [areaMode, setAreaMode] = useState<boolean>(false);
   const [isSignaturePadOpen, setIsSignaturePadOpen] = useState<boolean>(false);
   const [pendingImageData, setPendingImageData] = useState<string | null>(null);
   // Drawing mode state
@@ -339,7 +340,8 @@ const App = () => {
           <PdfLoader document={url}>
             {(pdfDocument) => (
               <PdfHighlighter
-                enableAreaSelection={(event) => event.altKey}
+                enableAreaSelection={(event) => event.altKey || areaMode}
+                areaSelectionMode={areaMode}
                 pdfDocument={pdfDocument}
                 onScrollAway={resetHash}
                 utilsRef={(_pdfHighlighterUtils) => {
@@ -347,7 +349,10 @@ const App = () => {
                 }}
                 pdfScaleValue={pdfScaleValue}
                 textSelectionColor={highlightPen ? "rgba(255, 226, 143, 1)" : undefined}
-                onSelection={highlightPen ? (selection) => addHighlight(selection.makeGhostHighlight(), "") : undefined}
+                onSelection={(highlightPen || areaMode) ? (selection) => {
+                  addHighlight(selection.makeGhostHighlight(), "");
+                  if (areaMode) setAreaMode(false);
+                } : undefined}
                 selectionTip={highlightPen ? undefined : <ExpandableTip addHighlight={addHighlight} />}
                 highlights={highlights}
                 enableFreetextCreation={() => freetextMode}
@@ -378,6 +383,8 @@ const App = () => {
             onToggleHighlightPen={() => setHighlightPen(!highlightPen)}
             freetextMode={freetextMode}
             onToggleFreetextMode={() => setFreetextMode(!freetextMode)}
+            areaMode={areaMode}
+            onToggleAreaMode={() => setAreaMode(!areaMode)}
             onAddImage={handleAddImage}
             onAddSignature={handleAddSignature}
             drawingMode={drawingMode}

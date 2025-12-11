@@ -7,6 +7,7 @@ import {
   Image,
   PenTool,
   Pencil,
+  Square,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
@@ -23,6 +24,8 @@ interface FloatingActionsProps {
   onToggleHighlightPen: () => void;
   freetextMode: boolean;
   onToggleFreetextMode: () => void;
+  areaMode: boolean;
+  onToggleAreaMode: () => void;
   onAddImage: () => void;
   onAddSignature: () => void;
   drawingMode: boolean;
@@ -48,6 +51,8 @@ export function FloatingActions({
   onToggleHighlightPen,
   freetextMode,
   onToggleFreetextMode,
+  areaMode,
+  onToggleAreaMode,
   onAddImage,
   onAddSignature,
   drawingMode,
@@ -59,7 +64,7 @@ export function FloatingActions({
 }: FloatingActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const isAnyModeActive = highlightPen || freetextMode || drawingMode;
+  const isAnyModeActive = highlightPen || freetextMode || areaMode || drawingMode;
 
   return (
     <TooltipProvider>
@@ -145,6 +150,27 @@ export function FloatingActions({
               </TooltipTrigger>
               <TooltipContent side="left">
                 {freetextMode ? "Exit note mode" : "Add note"}
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Area Highlight */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={areaMode ? "default" : "outline"}
+                  size="icon"
+                  className="h-12 w-12 rounded-full shadow-md"
+                  onClick={() => {
+                    console.log("Area mode toggled:", !areaMode);
+                    onToggleAreaMode();
+                    if (!areaMode) setIsOpen(false);
+                  }}
+                >
+                  <Square className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                {areaMode ? "Exit area mode" : "Area highlight"}
               </TooltipContent>
             </Tooltip>
 

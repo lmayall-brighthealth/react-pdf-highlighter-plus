@@ -66,3 +66,12 @@
 .PdfHighlighter--drawing-mode .textLayer {
   cursor: crosshair;
 }
+
+.PdfHighlighter--area-mode {
+  cursor: crosshair;
+}
+
+.PdfHighlighter--area-mode .pdfViewer,
+.PdfHighlighter--area-mode .textLayer {
+  cursor: crosshair;
+}

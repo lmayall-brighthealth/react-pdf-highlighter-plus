@@ -230,7 +230,7 @@ export const MouseSelection = ({
       container.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [start, end]);
+  }, [start, end, enableAreaSelection]);
 
   return (
     <div className="MouseSelection-container" ref={rootRef}>
