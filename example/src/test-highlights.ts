@@ -167,6 +167,119 @@ export const testHighlights: Record<string, Array<CommentedHighlight>> = {
       },
       id: "9298580906684795",
     },
+    {
+      type: "freetext",
+      content: {
+        text: "This is an editable note annotation",
+      },
+      position: {
+        boundingRect: {
+          x1: 300,
+          y1: 400,
+          x2: 500,
+          y2: 450,
+          width: 1019.9999999999999,
+          height: 1319.9999999999998,
+          pageNumber: 1,
+        },
+        rects: [
+          {
+            x1: 300,
+            y1: 400,
+            x2: 500,
+            y2: 450,
+            width: 1019.9999999999999,
+            height: 1319.9999999999998,
+            pageNumber: 1,
+          },
+        ],
+      },
+      comment: "Freetext annotation example",
+      color: "#000000",
+      backgroundColor: "#fffacd",
+      fontSize: "14px",
+      fontFamily: "Arial",
+      id: "freetext-example-001",
+    },
+    {
+      type: "image",
+      content: {
+        image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mNk+A+ERAhBDEOFBYcCAB2sAgXxH7lAAAAAAElFTkSuQmCC",
+      },
+      position: {
+        boundingRect: {
+          x1: 550,
+          y1: 500,
+          x2: 700,
+          y2: 600,
+          width: 1019.9999999999999,
+          height: 1319.9999999999998,
+          pageNumber: 1,
+        },
+        rects: [
+          {
+            x1: 550,
+            y1: 500,
+            x2: 700,
+            y2: 600,
+            width: 1019.9999999999999,
+            height: 1319.9999999999998,
+            pageNumber: 1,
+          },
+        ],
+      },
+      comment: "Image annotation example",
+      id: "image-example-001",
+    },
+    {
+      type: "drawing",
+      content: {
+        image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAKklEQVQ4jWNgGAUjBTAyMDD8J1XzqIGjBo4aOGrgqIGjBo4aOGrgMAAAmzkCBcEFLYwAAAAASUVORK5CYII=",
+        strokes: [
+          {
+            points: [
+              { x: 0.1, y: 0.1 },
+              { x: 0.2, y: 0.15 },
+              { x: 0.3, y: 0.1 },
+            ],
+            color: "#ff0000",
+            width: 2,
+          },
+          {
+            points: [
+              { x: 0.1, y: 0.2 },
+              { x: 0.3, y: 0.2 },
+            ],
+            color: "#0000ff",
+            width: 3,
+          },
+        ],
+      },
+      position: {
+        boundingRect: {
+          x1: 100,
+          y1: 600,
+          x2: 300,
+          y2: 750,
+          width: 1019.9999999999999,
+          height: 1319.9999999999998,
+          pageNumber: 2,
+        },
+        rects: [
+          {
+            x1: 100,
+            y1: 600,
+            x2: 300,
+            y2: 750,
+            width: 1019.9999999999999,
+            height: 1319.9999999999998,
+            pageNumber: 2,
+          },
+        ],
+      },
+      comment: "Drawing annotation example",
+      id: "drawing-example-001",
+    },
   ],
   "https://arxiv.org/pdf/1604.02480": [
     {
