@@ -1,3 +1,9 @@
+/* PDF.js viewer styles (required) */
+@import "pdfjs-dist/web/pdf_viewer.css";
+
+/* react-pdf-highlighter-plus styles */
+@import "../../../src/style/style.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

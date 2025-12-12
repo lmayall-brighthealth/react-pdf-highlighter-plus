@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import "../style/SignaturePad.css";
 
 /**
  * The props type for {@link SignaturePad}.

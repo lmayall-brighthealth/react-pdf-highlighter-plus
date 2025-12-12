@@ -1,7 +1,6 @@
 import React, { CSSProperties, MouseEvent, ReactNode } from "react";
 import { Rnd } from "react-rnd";
 import { getPageFromElement } from "../lib/pdfjs-dom";
-import "../style/ImageHighlight.css";
 import type { LTWHP, ViewportHighlight } from "../types";
 
 /**

@@ -1,7 +1,6 @@
 import React, { CSSProperties, MouseEvent, ReactNode, useState, useCallback, useEffect, useRef } from "react";
 import { Rnd } from "react-rnd";
 import { getPageFromElement } from "../lib/pdfjs-dom";
-import "../style/DrawingHighlight.css";
 import type { DrawingStroke, LTWHP, ViewportHighlight } from "../types";
 
 // Drawing style presets (same as toolbar)

@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { viewportPositionToScaled } from "../lib/coordinates";
 import { ShapeType, ShapeData, ScaledPosition, ViewportPosition } from "../types";
-import "../style/ShapeCanvas.css";
 
 import type { PDFViewer as TPDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 

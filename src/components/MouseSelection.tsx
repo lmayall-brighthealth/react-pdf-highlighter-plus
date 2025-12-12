@@ -1,7 +1,6 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 
 import { asElement, getPageFromElement, isHTMLElement } from "../lib/pdfjs-dom";
-import "../style/MouseSelection.css";
 
 import { PDFViewer } from "pdfjs-dist/types/web/pdf_viewer";
 import { viewportPositionToScaled } from "../lib/coordinates";

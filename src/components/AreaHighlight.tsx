@@ -8,9 +8,6 @@ import React, {
 } from "react";
 
 import { getPageFromElement } from "../lib/pdfjs-dom";
-
-import "../style/AreaHighlight.css";
-
 import { Rnd } from "react-rnd";
 import type { LTWHP, ViewportHighlight } from "../types";
 

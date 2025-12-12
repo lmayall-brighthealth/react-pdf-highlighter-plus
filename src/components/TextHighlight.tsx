@@ -7,8 +7,6 @@ import React, {
   useEffect,
 } from "react";
 
-import "../style/TextHighlight.css";
-
 import type { ViewportHighlight } from "../types";
 
 /**

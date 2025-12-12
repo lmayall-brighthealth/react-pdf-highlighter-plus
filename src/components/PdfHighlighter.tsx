@@ -1,7 +1,3 @@
-import "pdfjs-dist/web/pdf_viewer.css";
-import "../style/PdfHighlighter.css";
-import "../style/pdf_viewer.css";
-
 import debounce from "lodash.debounce";
 import { PDFDocumentProxy } from "pdfjs-dist";
 import React, {
