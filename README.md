@@ -7,11 +7,11 @@
   <a href="https://github.com/QuocVietHa08/react-pdf-highlighter-plus/actions/workflows/node.js.yml">
     <img src="https://github.com/QuocVietHa08/react-pdf-highlighter-plus/actions/workflows/node.js.yml/badge.svg" alt="Node.js CI">
   </a>
-  <a href="https://badge.fury.io/js/react-pdf-highlighter-extended">
-    <img src="https://badge.fury.io/js/react-pdf-highlighter-extended.svg" alt="npm version">
+  <a href="https://badge.fury.io/js/react-pdf-highlighter-plus">
+    <img src="https://badge.fury.io/js/react-pdf-highlighter-plus.svg" alt="npm version">
   </a>
-  <a href="https://www.npmjs.com/package/react-pdf-highlighter-extended">
-    <img src="https://img.shields.io/npm/dm/react-pdf-highlighter-extended.svg" alt="npm downloads">
+  <a href="https://www.npmjs.com/package/react-pdf-highlighter-plus">
+    <img src="https://img.shields.io/npm/dm/react-pdf-highlighter-plus.svg" alt="npm downloads">
   </a>
 </p>
 
@@ -48,14 +48,20 @@
 |----------|------|
 | Live Demo | [View Demo](https://quocvietha08.github.io/react-pdf-highlighter-plus/example-app/) |
 | Documentation | [API Docs](https://quocvietha08.github.io/react-pdf-highlighter-plus/docs/) |
-| NPM Package | [npm](https://www.npmjs.com/package/react-pdf-highlighter-extended) |
+| NPM Package | [npm](https://www.npmjs.com/package/react-pdf-highlighter-plus) |
 
 ---
 
-## Installation (Coming soon)
+## Installation
 
 ```bash
-npm install react-pdf-highlighter-extended
+npm install react-pdf-highlighter-plus
+```
+
+### Import Styles
+
+```tsx
+import "react-pdf-highlighter-plus/style/style.css";
 ```
 
 ---
@@ -71,7 +77,8 @@ import {
   TextHighlight,
   AreaHighlight,
   useHighlightContainerContext,
-} from "react-pdf-highlighter-extended";
+} from "react-pdf-highlighter-plus";
+import "react-pdf-highlighter-plus/style/style.css";
 
 function App() {
   const [highlights, setHighlights] = useState([]);
@@ -134,7 +141,7 @@ Hold `Alt` and drag to create rectangular highlights.
 Create draggable, editable text annotations with customizable styling.
 
 ```tsx
-import { FreetextHighlight } from "react-pdf-highlighter-extended";
+import { FreetextHighlight } from "react-pdf-highlighter-plus";
 
 <PdfHighlighter
   enableFreetextCreation={() => freetextMode}
@@ -168,7 +175,7 @@ import { FreetextHighlight } from "react-pdf-highlighter-extended";
 Upload images or draw signatures and place them on PDFs.
 
 ```tsx
-import { ImageHighlight, SignaturePad } from "react-pdf-highlighter-extended";
+import { ImageHighlight, SignaturePad } from "react-pdf-highlighter-plus";
 
 // Signature pad modal
 <SignaturePad
@@ -200,7 +207,7 @@ import { ImageHighlight, SignaturePad } from "react-pdf-highlighter-extended";
 Draw freehand annotations directly on PDFs.
 
 ```tsx
-import { DrawingHighlight } from "react-pdf-highlighter-extended";
+import { DrawingHighlight } from "react-pdf-highlighter-plus";
 
 <PdfHighlighter
   enableDrawingCreation={() => drawingMode}
@@ -235,7 +242,7 @@ import { DrawingHighlight } from "react-pdf-highlighter-extended";
 Export your annotated PDF with all highlights embedded.
 
 ```tsx
-import { exportPdf } from "react-pdf-highlighter-extended";
+import { exportPdf } from "react-pdf-highlighter-plus";
 
 const handleExport = async () => {
   const pdfBytes = await exportPdf(pdfUrl, highlights, {
@@ -356,7 +363,7 @@ const { highlight } = useHighlightContainerContext<MyHighlight>();
 ### Tips and Popups
 
 ```tsx
-import { MonitoredHighlightContainer } from "react-pdf-highlighter-extended";
+import { MonitoredHighlightContainer } from "react-pdf-highlighter-plus";
 
 <MonitoredHighlightContainer
   highlightTip={{
