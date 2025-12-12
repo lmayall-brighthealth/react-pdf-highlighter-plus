@@ -8,4 +8,7 @@ export interface CommentedHighlight extends Highlight {
   backgroundColor?: string;
   fontSize?: string;
   fontFamily?: string;
+  // Text/Area highlight style properties
+  highlightColor?: string;
+  highlightStyle?: "highlight" | "underline" | "strikethrough";
 }

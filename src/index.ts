@@ -2,12 +2,20 @@ import {
   PdfHighlighter,
   PdfHighlighterProps,
 } from "./components/PdfHighlighter";
-import { TextHighlight, TextHighlightProps } from "./components/TextHighlight";
+import {
+  TextHighlight,
+  TextHighlightProps,
+  TextHighlightStyle,
+} from "./components/TextHighlight";
 import {
   MonitoredHighlightContainer,
   MonitoredHighlightContainerProps,
 } from "./components/MonitoredHighlightContainer";
-import { AreaHighlight, AreaHighlightProps } from "./components/AreaHighlight";
+import {
+  AreaHighlight,
+  AreaHighlightProps,
+  AreaHighlightStyle,
+} from "./components/AreaHighlight";
 import {
   FreetextHighlight,
   FreetextHighlightProps,
@@ -72,8 +80,10 @@ export type {
   PdfHighlighterUtils,
   PdfHighlighterProps,
   TextHighlightProps,
+  TextHighlightStyle,
   MonitoredHighlightContainerProps,
   AreaHighlightProps,
+  AreaHighlightStyle,
   FreetextHighlightProps,
   FreetextStyle,
   ImageHighlightProps,

@@ -48,6 +48,12 @@ const HighlightContainer = ({
       <TextHighlight
         isScrolledTo={isScrolledTo}
         highlight={highlight}
+        highlightColor={highlight.highlightColor}
+        highlightStyle={highlight.highlightStyle}
+        onStyleChange={(style) => {
+          editHighlight(highlight.id, style);
+        }}
+        onDelete={() => deleteHighlight(highlight.id)}
         onContextMenu={(event) =>
           onContextMenu && onContextMenu(event, highlight)
         }
@@ -147,6 +153,11 @@ const HighlightContainer = ({
       <AreaHighlight
         isScrolledTo={isScrolledTo}
         highlight={highlight}
+        highlightColor={highlight.highlightColor}
+        onStyleChange={(style) => {
+          editHighlight(highlight.id, style);
+        }}
+        onDelete={() => deleteHighlight(highlight.id)}
         onChange={(boundingRect) => {
           const edit = {
             position: {

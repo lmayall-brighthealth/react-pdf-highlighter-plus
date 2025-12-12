@@ -36,6 +36,8 @@ export interface ExportableHighlight {
   position: ScaledPosition;
   /** Per-highlight color override (for text/area highlights) */
   highlightColor?: string;
+  /** Style mode for text highlights: "highlight" (default), "underline", or "strikethrough" */
+  highlightStyle?: "highlight" | "underline" | "strikethrough";
   /** Text color for freetext highlights */
   color?: string;
   /** Background color for freetext highlights */
@@ -223,6 +225,7 @@ function groupByPage(
 
 /**
  * Render a text highlight (multiple rectangles for multi-line selections).
+ * Supports highlight (background), underline, and strikethrough styles.
  */
 async function renderTextHighlight(
   page: PDFPage,
@@ -235,6 +238,7 @@ async function renderTextHighlight(
     options.textHighlightColor ||
     "rgba(255, 226, 143, 0.5)";
   const color = parseColor(colorStr);
+  const highlightStyle = highlight.highlightStyle || "highlight";
 
   // Text highlights use rects array for multi-line selections
   const rects =
@@ -244,14 +248,41 @@ async function renderTextHighlight(
 
   for (const rect of rects) {
     const { x, y, width, height } = scaledToPdfPoints(rect, page);
-    page.drawRectangle({
-      x,
-      y,
-      width,
-      height,
-      color: rgb(color.r, color.g, color.b),
-      opacity: color.a,
-    });
+
+    if (highlightStyle === "highlight") {
+      // Draw filled rectangle for background highlight
+      page.drawRectangle({
+        x,
+        y,
+        width,
+        height,
+        color: rgb(color.r, color.g, color.b),
+        opacity: color.a,
+      });
+    } else if (highlightStyle === "underline") {
+      // Draw line at bottom of rectangle
+      const lineThickness = Math.max(1, height * 0.1);
+      page.drawRectangle({
+        x,
+        y,
+        width,
+        height: lineThickness,
+        color: rgb(color.r, color.g, color.b),
+        opacity: color.a,
+      });
+    } else if (highlightStyle === "strikethrough") {
+      // Draw line through middle of rectangle
+      const lineThickness = Math.max(1, height * 0.1);
+      const lineY = y + height / 2 - lineThickness / 2;
+      page.drawRectangle({
+        x,
+        y: lineY,
+        width,
+        height: lineThickness,
+        color: rgb(color.r, color.g, color.b),
+        opacity: color.a,
+      });
+    }
   }
 }
 
